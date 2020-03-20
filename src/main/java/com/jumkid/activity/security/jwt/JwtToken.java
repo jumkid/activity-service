@@ -1,4 +1,4 @@
-package com.jumkid.activity.util.jwt;
+package com.jumkid.activity.security.jwt;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,7 +21,6 @@ public class JwtToken implements Serializable {
 
         if (splitString.length != 3) {
             log.error("JWT token could not be split into three parts ({}).", token);
-
         } else {
             String base64EncodedBody = splitString[1];
 

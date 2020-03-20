@@ -1,4 +1,4 @@
-package com.jumkid.activity.util.jwt;
+package com.jumkid.activity.security.jwt;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;

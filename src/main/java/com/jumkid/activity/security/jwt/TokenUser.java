@@ -1,4 +1,4 @@
-package com.jumkid.activity.util.jwt;
+package com.jumkid.activity.security.jwt;
 
 import com.google.common.collect.Lists;
 import lombok.Getter;

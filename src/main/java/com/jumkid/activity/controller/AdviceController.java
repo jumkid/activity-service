@@ -9,14 +9,14 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.util.Calendar;
 
-import static org.springframework.http.HttpStatus.NOT_FOUND;
+import org.springframework.http.HttpStatus;
 
 @RestControllerAdvice
 @Slf4j
 public class AdviceController {
 
     @ExceptionHandler({ActivityNotFoundException.class})
-    @ResponseStatus(NOT_FOUND)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public CustomErrorResponse handle(Exception ex) {
         log.info("Entity could not be found.", ex);
         return new CustomErrorResponse(Calendar.getInstance().getTime(), ex.getMessage());
