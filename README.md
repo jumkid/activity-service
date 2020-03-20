@@ -1,2 +1,2 @@
 # activity-service
-activity management
+activity management spring boot application
