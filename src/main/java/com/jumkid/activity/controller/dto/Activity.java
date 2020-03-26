@@ -1,26 +1,34 @@
 package com.jumkid.activity.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.jumkid.activity.controller.validation.ValidDateComparison;
 import com.jumkid.activity.enums.ActivityStatus;
+import com.jumkid.share.controller.dto.GenericDTO;
 import lombok.*;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
-import static com.jumkid.activity.util.Constants.FORMAT_DDMMYYYY_HHMM;
-
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
+@ValidDateComparison(message = "end date is earlier then start date",
+        first = "endDate",
+        second = "startDate",
+        greaterThenOrEquals = true)
 @Data
 @EqualsAndHashCode(of = {"activityId"}, callSuper = false)
-public class Activity extends GenericDTO{
+public class Activity extends GenericDTO {
 
     @Min(0L)
     private Long activityId;
@@ -36,16 +44,23 @@ public class Activity extends GenericDTO{
 
     private Priority priority;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = FORMAT_DDMMYYYY_HHMM)
+    @Future
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = FORMAT_DDMMYYYY_HHMM)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime startDate;
 
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = FORMAT_DDMMYYYY_HHMM)
+    @Future
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = FORMAT_DDMMYYYY_HHMM)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime endDate;
 
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Boolean autoNotify;
+
+    @Valid
+    private ActivityNotification activityNotification;
 
     /**
      * This constructor is for lombok builder only since it is subclass of generic DTO
@@ -53,7 +68,7 @@ public class Activity extends GenericDTO{
      */
     @Builder
     public Activity(Long activityId, String name, String description, ActivityStatus status,
-                    Priority priority, LocalDateTime startDate, LocalDateTime endDate,
+                    Priority priority, LocalDateTime startDate, LocalDateTime endDate, ActivityNotification activityNotification,
                     String createdBy, LocalDateTime creationDate, String modifiedBy, LocalDateTime modificationDate) {
         super(createdBy, creationDate, modifiedBy, modificationDate);
         this.activityId = activityId;
@@ -63,6 +78,7 @@ public class Activity extends GenericDTO{
         this.priority = priority;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.activityNotification = activityNotification;
     }
 
 }

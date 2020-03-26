@@ -2,6 +2,7 @@ package com.jumkid.activity.service.mapper;
 
 import com.jumkid.activity.controller.dto.Activity;
 import com.jumkid.activity.model.ActivityEntity;
+import com.jumkid.activity.model.ActivityNotificationEntity;
 import org.mapstruct.Mapper;
 
 @Mapper(componentModel="spring", uses = {PriorityMapper.class})
@@ -23,6 +24,9 @@ public class ActivityMapper {
 
         if (entity.getPriorityEntity() != null) dto.setPriority(PriorityMapper.INSTANCE.entityToDTO(entity.getPriorityEntity()));
 
+        if (entity.getActivityNotificationEntity() != null)
+            dto.setActivityNotification(ActivityNotificationMapper.INSTANCE.entityToDTO(entity.getActivityNotificationEntity()));
+
         return dto;
     }
 
@@ -41,6 +45,13 @@ public class ActivityMapper {
                 .build();
 
         if (dto.getPriority() != null) entity.setPriorityEntity(PriorityMapper.INSTANCE.dtoToEntity(dto.getPriority()));
+
+        if (dto.getActivityNotification() != null) {
+            ActivityNotificationEntity activityNotificationEntity = ActivityNotificationMapper.INSTANCE.dtoToEntity(dto.getActivityNotification());
+            activityNotificationEntity.setActivityEntity(entity);
+            entity.setActivityNotificationEntity(activityNotificationEntity);
+        }
+
 
         return entity;
     }

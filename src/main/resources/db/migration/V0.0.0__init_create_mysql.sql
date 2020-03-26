@@ -7,13 +7,26 @@ CREATE TABLE activity (
 
     start_date DATETIME NOT NULL,
     end_date DATETIME,
+    activity_notification_id INTEGER,
 
     created_by VARCHAR(255),
     creation_date DATETIME,
     modified_by VARCHAR(255),
     modification_date DATETIME
 );
-CREATE UNIQUE INDEX unique_key_activity_name ON activity(name(255));
+
+CREATE TABLE activity_notification (
+    activity_notification_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    activity_id INTEGER,
+    email VARCHAR(255),
+    sms_id VARCHAR(255),
+    notify_datetime DATETIME NOT NULL,
+    snooze_repeat SMALLINT,
+    snooze_repeat_interval SMALLINT,
+    FOREIGN KEY (activity_id)
+        REFERENCES activity(activity_id)
+        ON DELETE CASCADE
+);
 
 CREATE TABLE priority (
     priority_id INTEGER AUTO_INCREMENT PRIMARY KEY,
@@ -21,3 +34,4 @@ CREATE TABLE priority (
     label VARCHAR(255) NOT NULL
 );
 CREATE UNIQUE INDEX unique_key_priority_identifier ON priority(identifier(255));
+

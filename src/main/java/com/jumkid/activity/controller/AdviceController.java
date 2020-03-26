@@ -1,7 +1,7 @@
 package com.jumkid.activity.controller;
 
-import com.jumkid.activity.controller.response.CustomErrorResponse;
 import com.jumkid.activity.exception.ActivityNotFoundException;
+import com.jumkid.share.controller.response.CustomErrorResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;

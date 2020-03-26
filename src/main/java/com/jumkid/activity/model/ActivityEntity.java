@@ -16,7 +16,7 @@ public class ActivityEntity {
     @Id
     @Column(name = "activity_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long activityId;
+    private Long activityId;
 
     @Column(name = "name")
     private String name;
@@ -48,5 +48,9 @@ public class ActivityEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "priority_id")
     private PriorityEntity priorityEntity;
+
+    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "activity_notification_id")
+    private ActivityNotificationEntity activityNotificationEntity;
 
 }

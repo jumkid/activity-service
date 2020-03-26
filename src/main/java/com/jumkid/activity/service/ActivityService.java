@@ -1,13 +1,14 @@
 package com.jumkid.activity.service;
 
 import com.jumkid.activity.controller.dto.Activity;
+import com.jumkid.activity.controller.dto.ActivityNotification;
 import com.jumkid.activity.enums.ActivityStatus;
 import com.jumkid.activity.exception.ActivityNotFoundException;
 import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.repository.ActivityRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
 import com.jumkid.activity.service.mapper.ListActivityMapper;
-import com.jumkid.activity.util.DateTimeUtils;
+import com.jumkid.share.util.DateTimeUtils;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,18 +79,24 @@ public class ActivityService {
     private void normalizeDTO(Long activityId, Activity dto, ActivityEntity oldActivityEntity) {
         dto.setActivityId(activityId);
         if (dto.getStatus() == null) dto.setStatus(ActivityStatus.DRAFT);
+        if (dto.getEndDate() == null) dto.setEndDate(dto.getStartDate().plusHours(1));
+        if (dto.getAutoNotify() != null && dto.getAutoNotify() && dto.getActivityNotification() == null) {
+            dto.setActivityNotification(ActivityNotification.builder()
+                                            .notifyDatetime(dto.getStartDate().minusMinutes(5))
+                                            .build());
+        }
 
-        LocalDateTime localDateTime = DateTimeUtils.getCurrentDateTime();
+        LocalDateTime now = DateTimeUtils.getCurrentDateTime();
 
         //dto.setModifiedBy(userId);
-        dto.setModificationDate(localDateTime);
+        dto.setModificationDate(now);
 
         if (oldActivityEntity != null) {
             dto.setCreatedBy(oldActivityEntity.getCreatedBy());
             dto.setCreationDate(oldActivityEntity.getCreationDate());
         } else {
             //dto.setCreatedBy(userId);
-            dto.setCreationDate(localDateTime);
+            dto.setCreationDate(now);
         }
     }
 

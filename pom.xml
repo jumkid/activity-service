@@ -11,20 +11,28 @@
     <groupId>com.jumkid.activity</groupId>
     <artifactId>activity-service</artifactId>
     <version>0.0.1.SNAPSHORT</version>
-    <name>activity microservice</name>
-    <description>activity managerment spring boot serivce</description>
+    <name>activity management service</name>
+    <description>activity management spring boot application</description>
 
     <properties>
         <java.version>11</java.version>
         <swagger.version>2.9.2</swagger.version>
         <org.mapstruct.version>1.3.1.Final</org.mapstruct.version>
-        <org.projectlombok.version>1.18.10</org.projectlombok.version>
+        <org.projectlombok.version>1.18.12</org.projectlombok.version>
         <jaxb.version>2.3.0</jaxb.version>
         <flyway.version>6.1.4</flyway.version>
         <h2.db.version>1.4.200</h2.db.version>
+
+        <!-- jumkid modules -->
+        <sharejar.version>1.0</sharejar.version>
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>com.jumkid.share</groupId>
+            <artifactId>share-jar</artifactId>
+            <version>${sharejar.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -64,7 +72,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.8</version>
+            <version>${org.projectlombok.version}</version>
             <scope>provided</scope>
         </dependency>
 

@@ -1,7 +1,7 @@
 package com.jumkid.activity.controller;
 
 import com.jumkid.activity.controller.dto.Activity;
-import com.jumkid.activity.controller.response.CommonResponse;
+import com.jumkid.share.controller.response.CommonResponse;
 import com.jumkid.activity.service.ActivityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
