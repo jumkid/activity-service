@@ -17,12 +17,6 @@ public class ActivityNotificationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long activityNotificationId;
 
-    @Column(name = "email")
-    private String email;
-
-    @Column(name = "sms_id")
-    private String smsId;
-
     @Column(name = "notify_datetime")
     private LocalDateTime notifyDatetime;
 
@@ -31,6 +25,9 @@ public class ActivityNotificationEntity {
 
     @Column(name = "snooze_repeat_interval")
     private Integer snoozeRepeatInterval;
+
+    @Column(name = "active")
+    private boolean active;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "activity_id")

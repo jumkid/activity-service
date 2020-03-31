@@ -1,7 +1,5 @@
 package com.jumkid.activity.controller.dto;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
@@ -19,6 +17,7 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -61,6 +60,9 @@ public class Activity extends GenericDTO {
 
     @Valid
     private ActivityNotification activityNotification;
+
+    @Valid
+    private List<ActivityAssignee> activityAssignee;
 
     /**
      * This constructor is for lombok builder only since it is subclass of generic DTO

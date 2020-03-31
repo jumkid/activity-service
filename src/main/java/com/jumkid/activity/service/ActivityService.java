@@ -83,6 +83,7 @@ public class ActivityService {
         if (dto.getAutoNotify() != null && dto.getAutoNotify() && dto.getActivityNotification() == null) {
             dto.setActivityNotification(ActivityNotification.builder()
                                             .notifyDatetime(dto.getStartDate().minusMinutes(5))
+                                            .active(true)
                                             .build());
         }
 

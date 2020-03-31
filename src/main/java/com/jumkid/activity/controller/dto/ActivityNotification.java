@@ -1,6 +1,7 @@
 package com.jumkid.activity.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
@@ -12,7 +13,6 @@ import lombok.EqualsAndHashCode;
 import javax.validation.constraints.Future;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -23,12 +23,6 @@ public class ActivityNotification {
 
     @Min(0)
     private Long activityNotificationId;
-
-    @Size(max = 255)
-    private String email;
-
-    @Size(max = 255)
-    private String smsId;
 
     @NotNull
     @Future
@@ -41,5 +35,8 @@ public class ActivityNotification {
 
     @Min(1)
     private Integer snoozeRepeatInterval;
+
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+    private Boolean active;
 
 }

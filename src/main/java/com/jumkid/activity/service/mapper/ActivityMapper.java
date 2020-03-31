@@ -5,7 +5,7 @@ import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.model.ActivityNotificationEntity;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel="spring", uses = {PriorityMapper.class})
+@Mapper(componentModel="spring", uses = {PriorityMapper.class, ActivityAssigneeMapper.class})
 public class ActivityMapper {
 
     public Activity entityToDTO(ActivityEntity entity) {
@@ -26,6 +26,10 @@ public class ActivityMapper {
 
         if (entity.getActivityNotificationEntity() != null)
             dto.setActivityNotification(ActivityNotificationMapper.INSTANCE.entityToDTO(entity.getActivityNotificationEntity()));
+
+        if (entity.getActivityAssigneeEntities() != null && !entity.getActivityAssigneeEntities().isEmpty()) {
+            dto.setActivityAssignee(ListActivityAssigneeMapper.INSTANCE.entitiesToDTOs(entity.getActivityAssigneeEntities()));
+        }
 
         return dto;
     }
@@ -52,6 +56,9 @@ public class ActivityMapper {
             entity.setActivityNotificationEntity(activityNotificationEntity);
         }
 
+        if (dto.getActivityAssignee() != null && !dto.getActivityAssignee().isEmpty()) {
+            entity.setActivityAssigneeEntities(ListActivityAssigneeMapper.INSTANCE.dtosToEntities(dto.getActivityAssignee(), entity));
+        }
 
         return entity;
     }

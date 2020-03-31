@@ -5,6 +5,7 @@ import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "activity")
@@ -52,5 +53,9 @@ public class ActivityEntity {
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "activity_notification_id")
     private ActivityNotificationEntity activityNotificationEntity;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name="activity_id", referencedColumnName="activity_id")
+    private List<ActivityAssigneeEntity> activityAssigneeEntities;
 
 }

@@ -15,14 +15,23 @@ CREATE TABLE activity (
     modification_date DATETIME
 );
 
+CREATE TABLE activity_assignee (
+    activity_assignee_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    activity_id INTEGER NOT NULL,
+    assignee_id VARCHAR(255) NOT NULL,
+    FOREIGN KEY (activity_id)
+        REFERENCES activity(activity_id)
+        ON DELETE CASCADE
+);
+CREATE UNIQUE INDEX unique_key_activity_assignee_id ON activity_assignee(activity_id, assignee_id);
+
 CREATE TABLE activity_notification (
     activity_notification_id INTEGER AUTO_INCREMENT PRIMARY KEY,
     activity_id INTEGER,
-    email VARCHAR(255),
-    sms_id VARCHAR(255),
     notify_datetime DATETIME NOT NULL,
     snooze_repeat SMALLINT,
     snooze_repeat_interval SMALLINT,
+    active BOOL NOT NULL DEFAULT true,
     FOREIGN KEY (activity_id)
         REFERENCES activity(activity_id)
         ON DELETE CASCADE
