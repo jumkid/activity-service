@@ -4,6 +4,7 @@ import com.jumkid.activity.model.ActivityAssigneeEntity;
 import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.model.ActivityNotificationEntity;
 import com.jumkid.activity.repository.ActivityNotificationRepository;
+import com.jumkid.share.security.jwt.TokenUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -27,7 +28,6 @@ public class SchedulerConfig {
     public SchedulerConfig(ActivityNotificationRepository activityNotificationRepository) {
         this.activityNotificationRepository = activityNotificationRepository;
     }
-
 
     @Async
     @Scheduled(cron = "0 * * * * ?")

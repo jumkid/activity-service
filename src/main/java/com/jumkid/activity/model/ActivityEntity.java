@@ -58,4 +58,8 @@ public class ActivityEntity {
     @JoinColumn(name="activity_id", referencedColumnName="activity_id")
     private List<ActivityAssigneeEntity> activityAssigneeEntities;
 
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name="activity_id", referencedColumnName="activity_id")
+    private List<ContentResourceEntity> contentResourceEntities;
+
 }

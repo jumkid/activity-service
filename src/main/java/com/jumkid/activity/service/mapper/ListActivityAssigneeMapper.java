@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@Mapper(componentModel="spring", uses = {ActivityAssigneeMapper.class})
+@Mapper(componentModel="spring")
 public interface ListActivityAssigneeMapper {
 
     ListActivityAssigneeMapper INSTANCE = Mappers.getMapper( ListActivityAssigneeMapper.class );

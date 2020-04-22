@@ -62,7 +62,10 @@ public class Activity extends GenericDTO {
     private ActivityNotification activityNotification;
 
     @Valid
-    private List<ActivityAssignee> activityAssignee;
+    private List<ActivityAssignee> activityAssignees;
+
+    @Valid
+    private List<ContentResource> contentResources;
 
     /**
      * This constructor is for lombok builder only since it is subclass of generic DTO

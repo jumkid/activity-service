@@ -27,9 +27,11 @@ public class ActivityMapper {
         if (entity.getActivityNotificationEntity() != null)
             dto.setActivityNotification(ActivityNotificationMapper.INSTANCE.entityToDTO(entity.getActivityNotificationEntity()));
 
-        if (entity.getActivityAssigneeEntities() != null && !entity.getActivityAssigneeEntities().isEmpty()) {
-            dto.setActivityAssignee(ListActivityAssigneeMapper.INSTANCE.entitiesToDTOs(entity.getActivityAssigneeEntities()));
-        }
+        if (entity.getActivityAssigneeEntities() != null && !entity.getActivityAssigneeEntities().isEmpty())
+            dto.setActivityAssignees(ListActivityAssigneeMapper.INSTANCE.entitiesToDTOs(entity.getActivityAssigneeEntities()));
+
+        if (entity.getContentResourceEntities() != null && !entity.getContentResourceEntities().isEmpty())
+            dto.setContentResources(ListActivityContentResourceMapper.INSTANCE.entitiesToDTOs(entity.getContentResourceEntities()));
 
         return dto;
     }
@@ -56,9 +58,11 @@ public class ActivityMapper {
             entity.setActivityNotificationEntity(activityNotificationEntity);
         }
 
-        if (dto.getActivityAssignee() != null && !dto.getActivityAssignee().isEmpty()) {
-            entity.setActivityAssigneeEntities(ListActivityAssigneeMapper.INSTANCE.dtosToEntities(dto.getActivityAssignee(), entity));
-        }
+        if (dto.getActivityAssignees() != null && !dto.getActivityAssignees().isEmpty())
+            entity.setActivityAssigneeEntities(ListActivityAssigneeMapper.INSTANCE.dtosToEntities(dto.getActivityAssignees(), entity));
+
+        if (dto.getContentResources() != null && !dto.getContentResources().isEmpty())
+            entity.setContentResourceEntities(ListActivityContentResourceMapper.INSTANCE.dtosToEntities(dto.getContentResources(), entity));
 
         return entity;
     }

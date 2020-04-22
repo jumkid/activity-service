@@ -8,7 +8,9 @@ import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.repository.ActivityRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
 import com.jumkid.activity.service.mapper.ListActivityMapper;
+import com.jumkid.share.security.jwt.TokenUser;
 import com.jumkid.share.util.DateTimeUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 public class ActivityService {
 
@@ -26,9 +29,12 @@ public class ActivityService {
     private final ActivityMapper activityMapper = Mappers.getMapper( ActivityMapper.class );
     private final ListActivityMapper listActivityMapper = Mappers.getMapper(ListActivityMapper.class);
 
+    private final TokenUser tokenUser;
+
     @Autowired
-    public ActivityService(ActivityRepository activityRepository) {
+    public ActivityService(ActivityRepository activityRepository, TokenUser tokenUser) {
         this.activityRepository = activityRepository;
+        this.tokenUser = tokenUser;
     }
 
     public Activity getActivity(long activityId) {
@@ -42,6 +48,7 @@ public class ActivityService {
     }
 
     public List<Activity> getActivities() {
+        log.debug("fetch all activities");
         return listActivityMapper.entitiesToDTOS(activityRepository.findAll());
     }
 
