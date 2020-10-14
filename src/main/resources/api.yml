@@ -1,0 +1,149 @@
+openapi: 3.0.0
+info:
+  version: v1
+  title: activity-service API
+  description: activity-service RESTFul api for openapi 3.0 in swagger
+  termsOfService: 'https://jumkid.com/terms-of-use'
+  contact:
+    name: Chooli Yip
+    url: jumkid.com
+    email: chooli.yip@gmail.com
+  license:
+    name: Jumkid Public License
+    url: 'http://license.jumkid.com'
+
+servers:
+  - description: Testing
+    url: 'http://test.jumkid.com'
+  - description: Live production
+    url: 'http://api.jumkid.com'
+
+tags:
+  - name: v1
+    description: API for version 1.0.0
+  - name: test
+    description: API for test
+
+security:
+  - bearerAuth: []
+
+paths:
+  /activities:
+    get:
+      tags: ['v1']
+      operationId: getActivities
+      description: get all activities
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#components/schemas/Activity'
+
+    post:
+      tags: ['v1']
+      operationId: addActivity
+      description: add new activity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Activity'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Activity'
+
+  /activities/{activityId}:
+    get:
+      tags: ['v1']
+      operationId: getActivity
+      description: get existing activity by id
+      parameters:
+        - name: activityId
+          in: path
+          required: true
+          description: mediafile identifier
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Activity'
+
+    put:
+      tags: ['v1']
+      operationId: updateActivity
+      description: update existing activity
+      parameters:
+        - name: activityId
+          in: path
+          required: true
+          description: mediafile identifier
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Activity'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#components/schemas/Activity'
+
+    delete:
+      tags: ['v1']
+      operationId: deleteActivity
+      description: delete existsing activity
+      parameters:
+        - name: activityId
+          in: path
+          required: true
+          description: mediafile identifier
+          schema:
+            type: string
+      responses:
+        '204':
+          description: no content
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  errorCode:
+                    type: string
+                  msg:
+                    type: string
+                  data:
+                    type: string
+
+components:
+  schemas:
+    Activity:
+      description: Model of activity
+      properties:
+        activityId:
+          type: integer
+        name:
+          type: string
+
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
