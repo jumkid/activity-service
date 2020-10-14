@@ -58,7 +58,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#components/schemas/Activity'
+                $ref: '#/components/schemas/Activity'
 
   /activities/{activityId}:
     get:
@@ -78,7 +78,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#components/schemas/Activity'
+                $ref: '#/components/schemas/Activity'
 
     put:
       tags: ['v1']
@@ -102,7 +102,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#components/schemas/Activity'
+                $ref: '#/components/schemas/Activity'
 
     delete:
       tags: ['v1']
@@ -141,7 +141,27 @@ components:
           type: integer
         name:
           type: string
+        description:
+          type: string
+        status:
+          $ref: '#/components/schemas/ActivityStatus'
+        priority:
+          $ref: '#/components/schemas/Priority'
 
+    ActivityStatus: 
+      type: string
+      enum: [DRAFT, IN_PROGRESS, PENDING, COMPLETED]
+
+    Priority:
+      description: model of priority
+      properties:
+        priorityId:
+          type: integer
+        identifier:
+          type: string
+        label:
+          type: string      
+    
   securitySchemes:
     bearerAuth:
       type: http
