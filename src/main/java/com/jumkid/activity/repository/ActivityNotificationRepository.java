@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface ActivityNotificationRepository extends JpaRepository<ActivityNotificationEntity, Long> {
 
-    List<ActivityNotificationEntity> findByActiveAndNotifyDatetimeBefore(boolean active, LocalDateTime notifyDatetime);
+    List<ActivityNotificationEntity> findByExpiredAndTriggerDatetimeBefore(Boolean expired, LocalDateTime now);
 
 }

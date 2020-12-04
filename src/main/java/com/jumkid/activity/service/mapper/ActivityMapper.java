@@ -5,10 +5,12 @@ import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.model.ActivityNotificationEntity;
 import org.mapstruct.Mapper;
 
-@Mapper(componentModel="spring", uses = {PriorityMapper.class, ActivityAssigneeMapper.class})
-public class ActivityMapper {
+import java.time.LocalDateTime;
 
-    public Activity entityToDTO(ActivityEntity entity) {
+@Mapper(componentModel="spring", uses = {PriorityMapper.class, ActivityAssigneeMapper.class})
+public interface ActivityMapper {
+
+    default Activity entityToDTO(ActivityEntity entity) {
         Activity dto = Activity.builder()
                 .activityId(entity.getActivityId())
                 .name(entity.getName())
@@ -36,7 +38,7 @@ public class ActivityMapper {
         return dto;
     }
 
-    public ActivityEntity dtoToEntity(Activity dto) {
+    default ActivityEntity dtoToEntity(Activity dto) {
         ActivityEntity entity = ActivityEntity.builder()
                 .activityId(dto.getActivityId())
                 .name(dto.getName())
@@ -55,6 +57,25 @@ public class ActivityMapper {
         if (dto.getActivityNotification() != null) {
             ActivityNotificationEntity activityNotificationEntity = ActivityNotificationMapper.INSTANCE.dtoToEntity(dto.getActivityNotification());
             activityNotificationEntity.setActivityEntity(entity);
+
+            //reset trigger time
+            LocalDateTime startDate = entity.getStartDate();
+            LocalDateTime triggerDatetime;
+            switch (activityNotificationEntity.getNotifyBeforeUnit()) {
+                case DAY:
+                    triggerDatetime = startDate.minusDays(activityNotificationEntity.getNotifyBefore());
+                    break;
+                case HOUR:
+                    triggerDatetime = startDate.minusHours(activityNotificationEntity.getNotifyBefore());
+                    break;
+                case MINUTE:
+                    triggerDatetime = startDate.minusMinutes(activityNotificationEntity.getNotifyBefore());
+                    break;
+                default:
+                    triggerDatetime = startDate;
+            }
+            activityNotificationEntity.setTriggerDatetime(triggerDatetime);
+
             entity.setActivityNotificationEntity(activityNotificationEntity);
         }
 

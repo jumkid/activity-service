@@ -10,8 +10,8 @@ public interface ActivityNotificationMapper {
 
     ActivityNotificationMapper INSTANCE = Mappers.getMapper( ActivityNotificationMapper.class );
 
-    public ActivityNotification entityToDTO(ActivityNotificationEntity entity);
+    ActivityNotification entityToDTO(ActivityNotificationEntity entity);
 
-    public ActivityNotificationEntity dtoToEntity(ActivityNotification dto);
+    ActivityNotificationEntity dtoToEntity(ActivityNotification dto);
 
 }

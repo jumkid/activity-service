@@ -28,10 +28,10 @@ CREATE UNIQUE INDEX unique_key_activity_assignee_id ON activity_assignee(activit
 CREATE TABLE activity_notification (
     activity_notification_id INTEGER AUTO_INCREMENT PRIMARY KEY,
     activity_id INTEGER,
-    notify_datetime DATETIME NOT NULL,
-    snooze_repeat SMALLINT,
-    snooze_repeat_interval SMALLINT,
-    active BOOL NOT NULL DEFAULT true,
+    notify_before INTEGER,
+    notify_before_unit VARCHAR(10),
+    trigger_datetime DATETIME NOT NULL,
+    expired BOOL NOT NULL DEFAULT true,
     FOREIGN KEY (activity_id)
         REFERENCES activity(activity_id)
         ON DELETE CASCADE

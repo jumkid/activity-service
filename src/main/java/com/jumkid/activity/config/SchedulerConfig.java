@@ -4,7 +4,6 @@ import com.jumkid.activity.model.ActivityAssigneeEntity;
 import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.model.ActivityNotificationEntity;
 import com.jumkid.activity.repository.ActivityNotificationRepository;
-import com.jumkid.share.security.jwt.TokenUser;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -30,13 +29,14 @@ public class SchedulerConfig {
     }
 
     @Async
-    @Scheduled(cron = "0 * * * * ?")
+    @Scheduled(cron = "0 * * * * ?")  //trigger every minute
     @Transactional
     public void scheduleActivityNotification() {
         LocalDateTime now = LocalDateTime.now();
         log.debug("Pick up effective activity notifications before {}", now);
 
-        List<ActivityNotificationEntity> activeNotifications = activityNotificationRepository.findByActiveAndNotifyDatetimeBefore(true, now);
+        List<ActivityNotificationEntity> activeNotifications =
+                activityNotificationRepository.findByExpiredAndTriggerDatetimeBefore(false, now);
         if (!activeNotifications.isEmpty()) {
             log.info("Found total {} active notifications", activeNotifications.size());
             for (ActivityNotificationEntity activityNotificationEntity : activeNotifications) {

@@ -1,5 +1,6 @@
 package com.jumkid.activity.model;
 
+import com.jumkid.activity.enums.NotifyTimeUnit;
 import lombok.*;
 
 import javax.persistence.*;
@@ -17,17 +18,18 @@ public class ActivityNotificationEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long activityNotificationId;
 
-    @Column(name = "notify_datetime")
-    private LocalDateTime notifyDatetime;
+    @Column(name = "notify_before")
+    private Integer notifyBefore;
 
-    @Column(name = "snooze_repeat")
-    private Integer snoozeRepeat;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "notify_before_unit")
+    private NotifyTimeUnit notifyBeforeUnit;
 
-    @Column(name = "snooze_repeat_interval")
-    private Integer snoozeRepeatInterval;
+    @Column(name = "trigger_datetime")
+    private LocalDateTime triggerDatetime;
 
-    @Column(name = "active")
-    private boolean active;
+    @Column(name = "expired")
+    private boolean expired;
 
     @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JoinColumn(name = "activity_id")

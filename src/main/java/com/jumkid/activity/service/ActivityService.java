@@ -3,16 +3,18 @@ package com.jumkid.activity.service;
 import com.jumkid.activity.controller.dto.Activity;
 import com.jumkid.activity.controller.dto.ActivityNotification;
 import com.jumkid.activity.enums.ActivityStatus;
+import com.jumkid.activity.enums.NotifyTimeUnit;
 import com.jumkid.activity.exception.ActivityNotFoundException;
 import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.repository.ActivityRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
 import com.jumkid.activity.service.mapper.ListActivityMapper;
-import com.jumkid.share.security.jwt.TokenUser;
 import com.jumkid.share.util.DateTimeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -29,12 +31,9 @@ public class ActivityService {
     private final ActivityMapper activityMapper = Mappers.getMapper( ActivityMapper.class );
     private final ListActivityMapper listActivityMapper = Mappers.getMapper(ListActivityMapper.class);
 
-    private final TokenUser tokenUser;
-
     @Autowired
-    public ActivityService(ActivityRepository activityRepository, TokenUser tokenUser) {
+    public ActivityService(ActivityRepository activityRepository) {
         this.activityRepository = activityRepository;
-        this.tokenUser = tokenUser;
     }
 
     public Activity getActivity(long activityId) {
@@ -89,23 +88,26 @@ public class ActivityService {
         if (dto.getEndDate() == null) dto.setEndDate(dto.getStartDate().plusHours(1));
         if (dto.getAutoNotify() != null && dto.getAutoNotify() && dto.getActivityNotification() == null) {
             dto.setActivityNotification(ActivityNotification.builder()
-                                            .notifyDatetime(dto.getStartDate().minusMinutes(5))
-                                            .active(true)
+                                            .notifyBefore(5)
+                                            .notifyBeforeUnit(NotifyTimeUnit.MINUTE)
+                                            .expired(false)
                                             .build());
         }
 
         LocalDateTime now = DateTimeUtils.getCurrentDateTime();
+        UserDetails userDetail = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        //dto.setModifiedBy(userId);
+        if (userDetail != null) dto.setModifiedBy(userDetail.getPassword());
         dto.setModificationDate(now);
 
         if (oldActivityEntity != null) {
             dto.setCreatedBy(oldActivityEntity.getCreatedBy());
             dto.setCreationDate(oldActivityEntity.getCreationDate());
         } else {
-            //dto.setCreatedBy(userId);
+            if (userDetail != null) dto.setCreatedBy(userDetail.getPassword());  //userdetail uses password to carry user id
             dto.setCreationDate(now);
         }
+
     }
 
 }

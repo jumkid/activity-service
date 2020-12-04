@@ -1,5 +1,7 @@
 package com.jumkid.activity.enums;
 
+import com.fasterxml.jackson.annotation.JsonValue;
+
 import static java.util.Arrays.stream;
 
 public enum ActivityStatus {
@@ -9,6 +11,7 @@ public enum ActivityStatus {
     PENDING("pending"),
     COMPLETED("completed");
 
+    @JsonValue
     private final String value;
 
     ActivityStatus(String value) {
