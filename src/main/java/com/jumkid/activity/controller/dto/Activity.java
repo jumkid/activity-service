@@ -44,13 +44,13 @@ public class Activity extends GenericDTO {
     private Priority priority;
 
     @Future
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = FORMAT_DDMMYYYY_HHMM)
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-ddTHH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime startDate;
 
     @Future
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = FORMAT_DDMMYYYY_HHMM)
+    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-ddTHH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime endDate;

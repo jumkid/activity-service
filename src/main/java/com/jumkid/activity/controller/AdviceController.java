@@ -1,5 +1,6 @@
 package com.jumkid.activity.controller;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.jumkid.activity.exception.ActivityNotFoundException;
 import com.jumkid.share.controller.response.CustomErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -34,6 +35,13 @@ public class AdviceController {
                 .property(ex.getFieldErrors().stream().map(FieldError::getField).collect(Collectors.toList()))
                 .details(ex.getFieldErrors().stream().map(FieldError::getDefaultMessage).collect(Collectors.toList()))
                 .build();
+    }
+
+    @ExceptionHandler({InvalidFormatException.class})
+    @ResponseStatus(BAD_REQUEST)
+    public CustomErrorResponse handle(InvalidFormatException ex) {
+        log.info("Datetime string value is invalid.", ex);
+        return new CustomErrorResponse(Calendar.getInstance().getTime(), ex.getMessage());
     }
 
 }

@@ -9,7 +9,6 @@ import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.repository.ActivityRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
 import com.jumkid.activity.service.mapper.ListActivityMapper;
-import com.jumkid.share.util.DateTimeUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -94,7 +93,7 @@ public class ActivityService {
                                             .build());
         }
 
-        LocalDateTime now = DateTimeUtils.getCurrentDateTime();
+        LocalDateTime now = LocalDateTime.now();
         UserDetails userDetail = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
         if (userDetail != null) dto.setModifiedBy(userDetail.getPassword());
@@ -104,7 +103,7 @@ public class ActivityService {
             dto.setCreatedBy(oldActivityEntity.getCreatedBy());
             dto.setCreationDate(oldActivityEntity.getCreationDate());
         } else {
-            if (userDetail != null) dto.setCreatedBy(userDetail.getPassword());  //userdetail uses password to carry user id
+            if (userDetail != null) dto.setCreatedBy(userDetail.getPassword());  //UserDetail uses password to carry user id
             dto.setCreationDate(now);
         }
 
