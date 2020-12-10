@@ -23,4 +23,10 @@ public class ActivityAssignee {
     @NotBlank
     private String assigneeId;
 
+    @JsonIgnoreProperties
+    private String assigneeName;
+
+    @JsonIgnoreProperties
+    private String assigneeEmail;
+
 }
