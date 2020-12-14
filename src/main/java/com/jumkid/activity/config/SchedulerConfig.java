@@ -3,10 +3,13 @@ package com.jumkid.activity.config;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jumkid.activity.controller.dto.Activity;
+import com.jumkid.activity.controller.dto.ActivityAssignee;
 import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.model.ActivityNotificationEntity;
 import com.jumkid.activity.repository.ActivityNotificationRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
+import com.jumkid.share.user.UserProfile;
+import com.jumkid.share.user.UserProfileManager;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,12 +37,16 @@ public class SchedulerConfig {
 
     private final KafkaTemplate<String, String> kafkaTemplate;
 
+    private final UserProfileManager userProfileManager;
+
     private static final ActivityMapper activityMapper = Mappers.getMapper( ActivityMapper.class );
 
     @Autowired
-    public SchedulerConfig(ActivityNotificationRepository activityNotificationRepository, KafkaTemplate<String, String> kafkaTemplate) {
+    public SchedulerConfig(ActivityNotificationRepository activityNotificationRepository,
+                           KafkaTemplate<String, String> kafkaTemplate, UserProfileManager userProfileManager) {
         this.activityNotificationRepository = activityNotificationRepository;
         this.kafkaTemplate = kafkaTemplate;
+        this.userProfileManager = userProfileManager;
     }
 
     @Async
@@ -74,6 +81,13 @@ public class SchedulerConfig {
         Activity activity = activityMapper.entityToDTO(activityEntity);
         ObjectMapper objMapper = new ObjectMapper();
         try {
+            List<ActivityAssignee> assignees = activity.getActivityAssignees();
+            for (ActivityAssignee assignee : assignees) {
+                UserProfile userProfile = userProfileManager.fetchUserProfile(assignee.getAssigneeId(), null);
+                assignee.setAssigneeName(userProfile.getUsername());
+                assignee.setAssigneeEmail(userProfile.getEmail());
+            }
+
             activity.setActivityNotification(null); //don't send notification data
             kafkaTemplate.send(topic, objMapper.writeValueAsString(activity));
 

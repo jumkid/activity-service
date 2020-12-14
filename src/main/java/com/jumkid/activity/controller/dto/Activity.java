@@ -50,7 +50,6 @@ public class Activity extends GenericDTO {
     private LocalDateTime startDate;
 
     @Future
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-ddTHH:mm:ss")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime endDate;

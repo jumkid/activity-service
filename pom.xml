@@ -168,6 +168,7 @@
                 <filtering>true</filtering>
                 <directory>src/main/resources</directory>
                 <includes>
+                    <include>*.txt</include>
                     <include>*.properties</include>
                     <include>db/</include>
                 </includes>
