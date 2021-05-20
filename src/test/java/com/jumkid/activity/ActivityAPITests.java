@@ -30,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@TestPropertySource(locations = "classpath:application.test.properties")
+@TestPropertySource(locations = "classpath:application.properties")
 public class ActivityAPITests {
 
     @Autowired
@@ -46,12 +46,12 @@ public class ActivityAPITests {
     @Before
     public void setup() {
         try {
-            activity = TestsSetup.buildActivity();
+            activity = APITestsSetup.buildActivity();
 
             when(activityRepository.save(any(ActivityEntity.class)))
                     .thenReturn(activityMapper.dtoToEntity(activity));
 
-            when(activityRepository.findById(-1L)).thenReturn(Optional.of(activityMapper.dtoToEntity(activity)));
+            when(activityRepository.findById(activity.getActivityId())).thenReturn(Optional.of(activityMapper.dtoToEntity(activity)));
         } catch (Exception e) {
             Assert.fail();
         }

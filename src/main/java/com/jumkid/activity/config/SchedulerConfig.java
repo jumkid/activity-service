@@ -30,7 +30,7 @@ import java.util.Optional;
 @EnableScheduling
 public class SchedulerConfig {
 
-    @Value("${kafka.topic.activitynotification.name}")
+    @Value("${kafka.topic.activity.notification.name}")
     private String topic;
 
     private final ActivityNotificationRepository activityNotificationRepository;

@@ -21,10 +21,10 @@ public class KafkaEventConfig {
     @Value("${kafka.bootstrapAddress}")
     private String bootstrapAddress;
 
-    @Value("${kafka.topic.activitynotification.partitions}")
+    @Value("${kafka.topic.activity.notification.partitions}")
     private int numOfPartitions;
 
-    @Value("${kafka.topic.activitynotification.name}")
+    @Value("${kafka.topic.activity.notification.name}")
     private String topic;
 
     @Bean

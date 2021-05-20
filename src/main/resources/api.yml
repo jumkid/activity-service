@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   version: v1
   title: activity-service API
-  description: activity-service RESTFul api for openapi 3.0 in swagger
+  description: activity-service RESTFul api for openapi 3.1
   termsOfService: 'https://jumkid.com/terms-of-use'
   contact:
     name: Chooli Yip
@@ -148,15 +148,23 @@ components:
         priority:
           $ref: '#/components/schemas/Priority'
         startDate:
-          $ref: '#/components/schemas/LocalDateTime'
+          $ref: './share.yaml#/components/schemas/LocalDateTime'
         endDate:
-          $ref: '#/components/schemas/LocalDateTime'
+          $ref: './share.yaml#/components/schemas/LocalDateTime'
         autoNotify:
           type: boolean
         activityNotifications:
           type: array
           items:
             $ref: '#/components/schemas/ActivityNotification'
+        createdBy:
+          type: string
+        creationDate:
+          $ref: './share.yaml#/components/schemas/LocalDateTime'
+        modifiedBy:
+          type: string
+        modificationDate:
+          $ref: './share.yaml#/components/schemas/LocalDateTime'    
 
     ActivityStatus:
       type: string
@@ -187,54 +195,6 @@ components:
           type: string
         label:
           type: string 
-
-    LocalDateTime:
-        description: local datetime object
-        properties:
-          year:
-            type: integer
-            format: int32
-            nullable: false
-          monthValue:
-            type: integer
-            format: int32
-            nullable: false
-          month:
-            $ref: '#/components/schemas/Month'
-          dayOfMonth:
-            type: integer
-            format: int32
-            nullable: false
-          dayOfYear:
-            type: integer
-            format: int32
-            nullable: false
-          dayOfWeek:
-            $ref: '#/components/schemas/DayOfWeek'
-          hour:
-            type: integer
-            format: int32
-            nullable: false
-          minute:
-            type: integer
-            format: int32
-            nullable: false
-          second:
-            type: integer
-            format: int32
-            nullable: false
-          nano:
-            type: integer
-            format: int32
-            nullable: false
-
-    Month:
-      type: string
-      enum: [JANUARY, FEBRUARY, MARCH, APRIL, MAY, JUNE, JULY, AUGUST, SEPTEMBER, OCTOBER, NOVEMBER, DECEMBER]
-      
-    DayOfWeek:
-      type: string
-      enum: [MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY, SUNDAY]
 
     securitySchemes:
       bearerAuth:

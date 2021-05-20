@@ -17,7 +17,7 @@ import static org.springframework.http.HttpStatus.*;
 
 @RestControllerAdvice
 @Slf4j
-public class AdviceController {
+public class ExceptionHandlingAdvice {
 
     @ExceptionHandler({ActivityNotFoundException.class})
     @ResponseStatus(NOT_FOUND)

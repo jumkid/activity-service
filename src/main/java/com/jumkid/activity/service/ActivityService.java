@@ -94,16 +94,21 @@ public class ActivityService {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        UserDetails userDetail = (UserDetails)SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String userId = null;
+        Object userDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        if (userDetails != null) {
+            if (userDetails instanceof UserDetails) userId = ((UserDetails) userDetails).getPassword();
+            else userId = (String) userDetails;
+        }
 
-        if (userDetail != null) dto.setModifiedBy(userDetail.getPassword());
+        dto.setModifiedBy(userId);
         dto.setModificationDate(now);
 
         if (oldActivityEntity != null) {
             dto.setCreatedBy(oldActivityEntity.getCreatedBy());
             dto.setCreationDate(oldActivityEntity.getCreationDate());
         } else {
-            if (userDetail != null) dto.setCreatedBy(userDetail.getPassword());  //UserDetail uses password to carry user id
+            dto.setCreatedBy(userId);  //UserDetail uses password to carry user id
             dto.setCreationDate(now);
         }
 

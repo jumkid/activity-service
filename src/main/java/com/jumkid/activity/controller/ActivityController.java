@@ -6,6 +6,7 @@ import com.jumkid.activity.service.ActivityService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -26,6 +27,7 @@ public class ActivityController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyAuthority('admin')")
     public List<Activity> getActivities() {
         return activityService.getActivities();
     }

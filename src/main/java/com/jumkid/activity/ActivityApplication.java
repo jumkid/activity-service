@@ -1,18 +1,33 @@
 package com.jumkid.activity;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @SpringBootApplication
-public class ActivityApplication extends SpringBootServletInitializer {
+public class ActivityApplication implements CommandLineRunner {
+
+    @Value("${spring.application.name}")
+    private String appName;
+
+    @Value("${server.port}")
+    private String appPort;
+
+    @Value("${spring.application.version}")
+    private String version;
 
     public static void main(String[] args) {
         SpringApplication.run(ActivityApplication.class, args);
+    }
+
+    @Override
+    public void run(String... args) {
+        log.info("{} v{} started at port {} ", appName, version, appPort);
     }
 
     @Bean(name = "restTemplate")
