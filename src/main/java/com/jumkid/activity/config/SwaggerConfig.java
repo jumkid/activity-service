@@ -1,5 +1,6 @@
 package com.jumkid.activity.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -15,6 +16,15 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @Configuration
 public class SwaggerConfig {
 
+    @Value("${spring.application.version}")
+    private String version;
+
+    @Value("${spring.application.title}")
+    private String title;
+
+    @Value("${spring.application.description}")
+    private String description;
+
     @Bean
     public Docket api() {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -26,8 +36,9 @@ public class SwaggerConfig {
 
     private ApiInfo metaData() {
         return new ApiInfoBuilder()
-                .title("Spring Boot REST API")
-                .description("\"Spring Boot REST API for Jumkid\"").version("1.0.0")
+                .version(version)
+                .title(title)
+                .description(description)
                 .license("Apache License Version 2.0").licenseUrl("https://www.apache.org/licenses/LICENSE-2.0\"")
                 .contact(new Contact("Support", "http://www.jumkid.com/", "support@jumkid.com"))
                 .build();
