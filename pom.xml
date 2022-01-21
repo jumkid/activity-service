@@ -23,7 +23,7 @@
         <junit.version>4.13.2</junit.version>
         <jaxb.version>2.3.0</jaxb.version>
         <flyway.version>6.3.3</flyway.version>
-        <h2.db.version>1.4.200</h2.db.version>
+        <h2.db.version>2.1.210</h2.db.version>
 
         <!-- jumkid modules -->
         <sharejar.version>1.0.1</sharejar.version>
