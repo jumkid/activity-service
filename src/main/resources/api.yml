@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   version: v1
   title: activity-service API
@@ -148,9 +148,9 @@ components:
         priority:
           $ref: '#/components/schemas/Priority'
         startDate:
-          $ref: './share.yaml#/components/schemas/LocalDateTime'
+          $ref: 'https://raw.githubusercontent.com/jumkid/share-jar/master/src/main/resources/share.yaml#/components/schemas/LocalDateTime'
         endDate:
-          $ref: './share.yaml#/components/schemas/LocalDateTime'
+          $ref: 'https://raw.githubusercontent.com/jumkid/share-jar/master/src/main/resources/share.yaml#/components/schemas/LocalDateTime'
         autoNotify:
           type: boolean
         activityNotifications:
@@ -160,11 +160,11 @@ components:
         createdBy:
           type: string
         creationDate:
-          $ref: './share.yaml#/components/schemas/LocalDateTime'
+          $ref: 'https://raw.githubusercontent.com/jumkid/share-jar/master/src/main/resources/share.yaml#/components/schemas/LocalDateTime'
         modifiedBy:
           type: string
         modificationDate:
-          $ref: './share.yaml#/components/schemas/LocalDateTime'    
+          $ref: 'https://raw.githubusercontent.com/jumkid/share-jar/master/src/main/resources/share.yaml#/components/schemas/LocalDateTime'
 
     ActivityStatus:
       type: string
