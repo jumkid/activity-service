@@ -9,6 +9,8 @@ import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.repository.ActivityRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
 import com.jumkid.activity.service.mapper.ListActivityMapper;
+import com.jumkid.share.user.UserProfile;
+import com.jumkid.share.user.UserProfileManager;
 import lombok.extern.slf4j.Slf4j;
 import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +29,15 @@ public class ActivityService {
 
     private final ActivityRepository activityRepository;
 
+    private final UserProfileManager userProfileManager;
+
     private final ActivityMapper activityMapper = Mappers.getMapper( ActivityMapper.class );
     private final ListActivityMapper listActivityMapper = Mappers.getMapper(ListActivityMapper.class);
 
     @Autowired
-    public ActivityService(ActivityRepository activityRepository) {
+    public ActivityService(ActivityRepository activityRepository, UserProfileManager userProfileManager) {
         this.activityRepository = activityRepository;
+        this.userProfileManager = userProfileManager;
     }
 
     public Activity getActivity(long activityId) {
@@ -94,12 +99,8 @@ public class ActivityService {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        String userId = null;
-        Object userDetails = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (userDetails != null) {
-            if (userDetails instanceof UserDetails) userId = ((UserDetails) userDetails).getPassword();
-            else userId = (String) userDetails;
-        }
+        UserProfile userProfile = userProfileManager.fetchUserProfile();
+        String userId = userProfile != null ? userProfile.getId() : null;
 
         dto.setModifiedBy(userId);
         dto.setModificationDate(now);
