@@ -1,6 +1,6 @@
 package com.jumkid.activity.controller.dto;
 
-import com.jumkid.share.controller.dto.GenericDTO;
+import com.jumkid.share.service.dto.GenericDTO;
 import lombok.*;
 
 import javax.validation.constraints.Min;

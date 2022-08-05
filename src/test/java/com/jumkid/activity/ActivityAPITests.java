@@ -16,6 +16,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.test.context.EmbeddedKafka;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
@@ -60,6 +61,7 @@ public class ActivityAPITests {
     }
 
     @Test
+    @WithMockUser(username="test", password="test", authorities="user")
     public void whenGivenActivity_shouldSaveActivityEntity() throws Exception{
         mockMvc.perform(post("/activities")
                     .contentType(MediaType.APPLICATION_JSON)
@@ -70,8 +72,9 @@ public class ActivityAPITests {
     }
 
     @Test
+    @WithMockUser(username="test", password="test", authorities="user")
     public void whenGivenActivityIdAdActivity_shouldUpdateActivityEntity() throws Exception{
-        mockMvc.perform(put("/activities/"+activity.getActivityId())
+        mockMvc.perform(put("/activities/" + activity.getActivityId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(activity)))
                 .andExpect(status().isOk())
@@ -81,7 +84,7 @@ public class ActivityAPITests {
 
     @Test
     public void whenGivenActivityId_shouldDeleteActivityEntity() throws Exception{
-        mockMvc.perform(delete("/activities/"+activity.getActivityId())
+        mockMvc.perform(delete("/activities/" + activity.getActivityId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
