@@ -17,7 +17,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -33,7 +32,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
-@TestPropertySource(locations = "classpath:application.properties")
 public class ActivityAPITests {
 
     @Autowired
@@ -61,8 +59,34 @@ public class ActivityAPITests {
     }
 
     @Test
-    @WithMockUser(username="test", password="test", authorities="user")
-    public void whenGivenActivity_shouldSaveActivityEntity() throws Exception{
+    @WithMockUser(username="test", password="test", authorities="USER_ROLE")
+    public void whenGivenActivityId_shouldReturnActivity() throws Exception {
+        mockMvc.perform(get("/activities/" + activity.getActivityId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.activityId").value(activity.getActivityId()))
+                .andExpect(jsonPath("$.name").value(activity.getName()));
+    }
+
+    @Test
+    @WithMockUser(username="guest", authorities="GUEST_ROLE")
+    public void whenAssessAsGuest_shouldReturnForbiddenStat() throws Exception {
+        mockMvc.perform(get("/activities/" + activity.getActivityId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username="notOwner", password = "notOwner", authorities="USER_ROLE")
+    public void whenAssessAsNoOwner_shouldReturnForbiddenStat() throws Exception {
+        mockMvc.perform(get("/activities/" + activity.getActivityId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username="test", password="test", authorities="USER_ROLE")
+    public void whenGivenActivity_shouldSaveActivityEntity() throws Exception {
         mockMvc.perform(post("/activities")
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(new ObjectMapper().writeValueAsBytes(activity)))
@@ -72,7 +96,16 @@ public class ActivityAPITests {
     }
 
     @Test
-    @WithMockUser(username="test", password="test", authorities="user")
+    @WithMockUser(username="guest", authorities="GUEST_ROLE")
+    public void whenSaveAsGuest_shouldReturnForbiddenStat() throws Exception {
+        mockMvc.perform(post("/activities")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsBytes(activity)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username="test", password="test", authorities="USER_ROLE")
     public void whenGivenActivityIdAdActivity_shouldUpdateActivityEntity() throws Exception{
         mockMvc.perform(put("/activities/" + activity.getActivityId())
                 .contentType(MediaType.APPLICATION_JSON)
@@ -83,10 +116,45 @@ public class ActivityAPITests {
     }
 
     @Test
+    @WithMockUser(username="guest", authorities="GUEST_ROLE")
+    public void whenUpdateAsGuest_shouldReturnForbiddenStat() throws Exception {
+        mockMvc.perform(put("/activities/" + activity.getActivityId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsBytes(activity)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username="notOwner", authorities="USER_ROLE")
+    public void whenUpdateAsNotOwner_shouldReturnForbiddenStat() throws Exception {
+        mockMvc.perform(put("/activities/" + activity.getActivityId())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(new ObjectMapper().writeValueAsBytes(activity)))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username="test", password="test", authorities="USER_ROLE")
     public void whenGivenActivityId_shouldDeleteActivityEntity() throws Exception{
         mockMvc.perform(delete("/activities/" + activity.getActivityId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    @WithMockUser(username="guest", authorities="GUEST_ROLE")
+    public void whenDeleteAsGuest_shouldReturnForbiddenStat() throws Exception{
+        mockMvc.perform(delete("/activities/" + activity.getActivityId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    @WithMockUser(username="notOwner", authorities="USER_ROLE")
+    public void whenDeleteAsNotOwner_shouldReturnForbiddenStat() throws Exception{
+        mockMvc.perform(delete("/activities/" + activity.getActivityId())
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isForbidden());
     }
 
 }

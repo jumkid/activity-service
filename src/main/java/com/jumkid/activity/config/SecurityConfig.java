@@ -33,22 +33,15 @@ public class SecurityConfig {
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.authorizeRequests()
-                .antMatchers("/v2/api-docs",
-                        "/configuration/ui",
-                        "/swagger-resources/**",
-                        "/configuration/security",
-                        "/swagger-ui.html",
-                        "/webjars/**").permitAll() //whitelist
                 .antMatchers(enableTokenCheck? "/**" : "/admin-console").authenticated() //any other request
-                .and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                .csrf().disable();  // enable this if the authorization service exposure to public
+                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                    .addFilterBefore(new BearerTokenRequestFilter(enableTokenCheck, tokenIntrospectUrl, restTemplate),
+                            UsernamePasswordAuthenticationFilter.class)
+                    .csrf().disable();  // enable this if the authorization service exposure to public
 
-        http.addFilterBefore(new BearerTokenRequestFilter(enableTokenCheck, tokenIntrospectUrl, restTemplate),
-                UsernamePasswordAuthenticationFilter.class);
-             
-        return http.build();        
+        return http.build();
     }
 
     @Bean

@@ -1,8 +1,8 @@
 package com.jumkid.activity.controller;
 
 import com.jumkid.activity.controller.dto.Activity;
-import com.jumkid.share.controller.response.CommonResponse;
 import com.jumkid.activity.service.ActivityService;
+import com.jumkid.share.controller.response.CommonResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -27,19 +27,22 @@ public class ActivityController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasAnyAuthority('admin')")
+    @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')")
     public List<Activity> getActivities() {
-        return activityService.getActivities();
+        return activityService.getUserActivities();
     }
 
     @GetMapping("{activityId}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')" +
+            " && @activityAccessAuthorizer.isOwner(#activityId)")
     public Activity getActivity(@PathVariable long activityId) {
         return activityService.getActivity(activityId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')")
     public Activity addActivity(@NotNull @Valid @RequestBody Activity activity) {
         log.debug("add new activity");
         return activityService.addActivity(activity);
@@ -47,6 +50,8 @@ public class ActivityController {
 
     @PutMapping(value = "{activityId}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')" +
+            " && @activityAccessAuthorizer.isOwner(#activityId)")
     public Activity updateActivity(@PathVariable long activityId,
                                    @NotNull @Valid @RequestBody Activity activity) {
         log.debug("update existing activity with id {}", activityId);
@@ -55,6 +60,8 @@ public class ActivityController {
 
     @DeleteMapping(value = "{activityId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')" +
+            " && @activityAccessAuthorizer.isOwner(#activityId)")
     public CommonResponse deleteActivity(@PathVariable long activityId) {
         log.debug("delete activity by id {}", activityId);
         activityService.deleteActivity(activityId);

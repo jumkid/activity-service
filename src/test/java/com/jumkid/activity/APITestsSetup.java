@@ -20,7 +20,7 @@ class APITestsSetup {
                 .status(ActivityStatus.DRAFT)
                 .startDate(now.plusDays(1))
                 .endDate(now.plusDays(2))
-                .createdBy("system")
+                .createdBy("test")
                 .creationDate(now)
                 .build();
     }

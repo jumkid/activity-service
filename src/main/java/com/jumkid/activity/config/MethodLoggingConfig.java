@@ -23,8 +23,8 @@ public class MethodLoggingConfig extends AbstractMethodLoggingConfig {
     @Pointcut("execution(* com.jumkid.activity.repository.ActivityRepository.*(..))" +
             "|| execution(* com.jumkid.activity.repository.PriorityRepository.*(..))" +
             "|| execution(* com.jumkid.activity.repository.ActivityNotificationRepository.*(..))")
-    public void monitor() { 
-        //void
+    public void monitor() {
+        //custom log message if needed here
     }
 
     @Before("execution(* com.jumkid.activity.controller.*Controller.*(..))")
