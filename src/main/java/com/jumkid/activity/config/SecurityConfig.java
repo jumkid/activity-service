@@ -32,14 +32,14 @@ public class SecurityConfig {
 
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeRequests()
-                .antMatchers(enableTokenCheck? "/**" : "/admin-console").authenticated() //any other request
+        http.antMatcher("/**")
+                .authorizeRequests().anyRequest().authenticated()
                 .and()
-                    .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
-                    .addFilterBefore(new BearerTokenRequestFilter(enableTokenCheck, tokenIntrospectUrl, restTemplate),
-                            UsernamePasswordAuthenticationFilter.class)
-                    .csrf().disable();  // enable this if the authorization service exposure to public
+                .addFilterBefore(new BearerTokenRequestFilter(enableTokenCheck, tokenIntrospectUrl, restTemplate),
+                        UsernamePasswordAuthenticationFilter.class)
+                .csrf().disable();  // enable this if the authorization service exposure to public
 
         return http.build();
     }

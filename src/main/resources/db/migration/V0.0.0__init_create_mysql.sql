@@ -10,9 +10,9 @@ CREATE TABLE activity (
     activity_notification_id INTEGER,
 
     created_by VARCHAR(255),
-    creation_date DATETIME,
+    creation_date DATETIME(3),
     modified_by VARCHAR(255),
-    modification_date DATETIME
+    modification_date DATETIME(3)
 );
 
 CREATE TABLE activity_assignee (
