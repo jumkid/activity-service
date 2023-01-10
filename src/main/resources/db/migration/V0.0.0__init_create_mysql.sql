@@ -17,7 +17,7 @@ CREATE TABLE activity (
 
 CREATE TABLE activity_assignee (
     activity_assignee_id INTEGER AUTO_INCREMENT PRIMARY KEY,
-    activity_id INTEGER NOT NULL,
+    activity_id INTEGER,
     assignee_id VARCHAR(255) NOT NULL,
     FOREIGN KEY (activity_id)
         REFERENCES activity(activity_id)
@@ -46,6 +46,17 @@ CREATE TABLE activity_content_resource (
         ON DELETE CASCADE
 );
 CREATE UNIQUE INDEX unique_key_activity_assignee_id ON activity_content_resource(activity_id, content_resource_id);
+
+CREATE TABLE activity_entity_link (
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    activity_id INTEGER,
+    entity_name VARCHAR(10) NOT NULL,
+    entity_id VARCHAR(100) NOT NULL,
+    FOREIGN KEY (activity_id)
+        REFERENCES activity(activity_id)
+        ON DELETE CASCADE
+);
+CREATE UNIQUE INDEX unique_key_activity_entity_link ON activity_entity_link(activity_id, entity_name, entity_id);
 
 CREATE TABLE priority (
     priority_id INTEGER AUTO_INCREMENT PRIMARY KEY,

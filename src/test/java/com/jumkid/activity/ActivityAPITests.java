@@ -5,11 +5,11 @@ import com.jumkid.activity.controller.dto.Activity;
 import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.repository.ActivityRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
+import com.jumkid.activity.service.mapper.MapperContext;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.factory.Mappers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,7 +31,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @RunWith(SpringJUnit4ClassRunner.class)
 @SpringBootTest
 @AutoConfigureMockMvc
-@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:9092", "port=9092" })
+@EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:10092", "port=10092" })
 public class ActivityAPITests {
 
     @Autowired
@@ -39,7 +39,11 @@ public class ActivityAPITests {
 
     private Activity activity;
 
-    private final ActivityMapper activityMapper = Mappers.getMapper( ActivityMapper.class );
+    @Autowired
+    private ActivityMapper activityMapper;
+
+    @Autowired
+    private MapperContext mapperContext;
 
     @MockBean
     private ActivityRepository activityRepository;
@@ -48,11 +52,12 @@ public class ActivityAPITests {
     public void setup() {
         try {
             activity = APITestsSetup.buildActivity();
+            ActivityEntity activityEntity = activityMapper.dtoToEntity(activity, mapperContext);
 
-            when(activityRepository.save(any(ActivityEntity.class)))
-                    .thenReturn(activityMapper.dtoToEntity(activity));
+            when(activityRepository.save(any(ActivityEntity.class))).thenReturn(activityEntity);
 
-            when(activityRepository.findById(activity.getActivityId())).thenReturn(Optional.of(activityMapper.dtoToEntity(activity)));
+            when(activityRepository.findById(activity.getActivityId()))
+                    .thenReturn(Optional.of(activityEntity));
         } catch (Exception e) {
             Assert.fail();
         }

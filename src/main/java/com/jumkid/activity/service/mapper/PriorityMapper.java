@@ -8,8 +8,6 @@ import org.mapstruct.factory.Mappers;
 @Mapper(componentModel="spring")
 public interface PriorityMapper {
 
-    PriorityMapper INSTANCE = Mappers.getMapper( PriorityMapper.class );
-
     Priority entityToDTO(PriorityEntity entity);
 
     PriorityEntity dtoToEntity(Priority dto);

@@ -4,23 +4,26 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
 
 @Entity
-@Table(name = "activity_assignee")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Table(name = "activity_entity_link")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
-public class ActivityAssigneeEntity {
+public class ActivityEntityLinkEntity {
 
     @Id
-    @Column(name = "activity_assignee_id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long activityAssigneeId;
+    private long id;
 
-    @NotBlank
-    @Column(name = "assignee_id")
-    private String assigneeId;
+    @Column(name = "entity_id")
+    private String entityId;
+
+    @Column(name = "entity_name")
+    private String entityName;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id")

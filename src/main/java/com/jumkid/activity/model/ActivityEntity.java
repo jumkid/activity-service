@@ -56,7 +56,11 @@ public class ActivityEntity {
     private ActivityNotificationEntity activityNotificationEntity;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
-    @JoinColumn(name="activity_id", referencedColumnName="activity_id")
+    @JoinColumn(name = "activity_id")
+    private List<ActivityEntityLinkEntity> activityEntityLinkEntities;
+
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JoinColumn(name = "activity_id")
     private List<ActivityAssigneeEntity> activityAssigneeEntities;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

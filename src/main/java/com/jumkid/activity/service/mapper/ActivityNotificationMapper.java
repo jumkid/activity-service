@@ -3,12 +3,11 @@ package com.jumkid.activity.service.mapper;
 import com.jumkid.activity.controller.dto.ActivityNotification;
 import com.jumkid.activity.model.ActivityNotificationEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.factory.Mappers;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 
-@Mapper(componentModel="spring")
+@Mapper(componentModel="spring", uses = {ActivityMapper.class},
+        nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ActivityNotificationMapper {
-
-    ActivityNotificationMapper INSTANCE = Mappers.getMapper( ActivityNotificationMapper.class );
 
     ActivityNotification entityToDTO(ActivityNotificationEntity entity);
 

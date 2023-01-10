@@ -157,6 +157,10 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ActivityNotification'
+        ActivityEntityLinks:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActivityEntityLink'    
         createdBy:
           type: string
         creationDate:
@@ -185,6 +189,18 @@ components:
           type: integer
         notifyBeforeUnit:
           $ref: '#/components/schemas/NotifyTimeUnit'
+
+    ActivityEntityLink:
+      description: model of activity entity link
+      properties:
+        id:
+          type: integer
+        activityId:
+          type: integer
+        entityId:
+          type: string
+        entityName:
+          type: string       
 
     Priority:
       description: model of priority
