@@ -1,5 +1,6 @@
 package com.jumkid.activity.service;
 
+import com.jumkid.activity.exception.ActivityNotFoundException;
 import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.repository.ActivityRepository;
 import com.jumkid.share.security.exception.UserProfileNotFoundException;
@@ -23,14 +24,36 @@ public class ActivityAccessAuthorizer {
 
     public boolean isOwner(long activityId) {
         Optional<ActivityEntity> optional = activityRepository.findById(activityId);
-        return optional.filter(activityEntity -> isCurrentUserOwned(activityEntity.getCreatedBy())).isPresent();
+        return optional.filter(activityEntity -> isCurrentUser(activityEntity.getCreatedBy())).isPresent();
     }
 
     public boolean isOwner(ActivityEntity activityEntity) {
-        return isCurrentUserOwned(activityEntity.getCreatedBy());
+        return isCurrentUser(activityEntity.getCreatedBy());
     }
 
-    private boolean isCurrentUserOwned(String userId) {
+    public boolean isAssignee(long activityId) {
+        Optional<ActivityEntity> optional = activityRepository.findById(activityId);
+        if (optional.isPresent()) {
+            return isAssignee(optional.get());
+        } else {
+            throw new ActivityNotFoundException(activityId);
+        }
+    }
+
+    public boolean isAssignee(ActivityEntity activityEntity) {
+        String currentUserId = this.getUserProfile().getId();
+
+        if (activityEntity.getActivityAssigneeEntities() == null ||
+                activityEntity.getActivityAssigneeEntities().isEmpty()) {
+            return false;
+        } else {
+            return activityEntity.getActivityAssigneeEntities()
+                    .stream()
+                    .anyMatch( m -> m.getAssigneeId().equals(currentUserId));
+        }
+    }
+
+    private boolean isCurrentUser(String userId) {
         return this.getUserProfile().getId().equals(userId);
     }
 

@@ -35,7 +35,7 @@ public class ActivityController {
     @GetMapping("{activityId}")
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')" +
-            " && @activityAccessAuthorizer.isOwner(#activityId)")
+            " && (@activityAccessAuthorizer.isOwner(#activityId) || @activityAccessAuthorizer.isAssignee(#activityId))")
     public Activity get(@PathVariable long activityId) {
         return activityService.getActivity(activityId);
     }
