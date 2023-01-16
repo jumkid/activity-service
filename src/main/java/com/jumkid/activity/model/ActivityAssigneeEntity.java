@@ -24,7 +24,6 @@ public class ActivityAssigneeEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id")
-    @JsonIgnore
     private ActivityEntity activityEntity;
 
 }

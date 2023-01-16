@@ -1,6 +1,5 @@
 package com.jumkid.activity.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -27,7 +26,6 @@ public class ActivityEntityLinkEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "activity_id")
-    @JsonIgnore
     private ActivityEntity activityEntity;
 
 }

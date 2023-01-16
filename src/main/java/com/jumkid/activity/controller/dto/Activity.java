@@ -12,10 +12,7 @@ import com.jumkid.share.service.dto.GenericDTO;
 import lombok.*;
 
 import javax.validation.Valid;
-import javax.validation.constraints.Future;
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -39,12 +36,14 @@ public class Activity extends GenericDTO {
     @Size(max = 5000)
     private String description;
 
+    @NotNull
     private ActivityStatus status;
 
+    @NotNull
     private Priority priority;
 
     @Future
-    //@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-ddTHH:mm:ss")
+    @NotNull
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime startDate;

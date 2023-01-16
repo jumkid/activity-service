@@ -2,7 +2,6 @@ package com.jumkid.activity.service;
 
 import com.jumkid.activity.controller.dto.Activity;
 import com.jumkid.activity.controller.dto.ActivityNotification;
-import com.jumkid.activity.enums.ActivityStatus;
 import com.jumkid.activity.enums.NotifyTimeUnit;
 import com.jumkid.activity.exception.ActivityNotFoundException;
 import com.jumkid.activity.model.ActivityEntity;
@@ -46,7 +45,7 @@ public class ActivityServiceImpl implements ActivityService{
         Optional<ActivityEntity> optional = activityRepository.findById(activityId);
         if (optional.isPresent()) {
             ActivityEntity entity = optional.get();
-            return activityMapper.entityToDTO(entity);
+            return activityMapper.entityToDTO(entity, mapperContext);
         } else {
             throw new ActivityNotFoundException(activityId);
         }
@@ -55,7 +54,7 @@ public class ActivityServiceImpl implements ActivityService{
     @Override
     public List<Activity> getUserActivities() {
         log.debug("fetch all activities for current user");
-        return activityMapper.entitiesToDTOS(activityRepository.findAll());
+        return activityMapper.entitiesToDTOS(activityRepository.findByUser(getCurrentUserId()));
     }
 
     @Override
@@ -66,23 +65,24 @@ public class ActivityServiceImpl implements ActivityService{
         computeNotifyTriggerDatetime(entity);
         ActivityEntity newActivity = activityRepository.save(entity);
 
-        return activityMapper.entityToDTO(newActivity);
+        return activityMapper.entityToDTO(newActivity, mapperContext);
     }
 
     @Override
     @Transactional
-    public Activity updateActivity(long activityId, Activity activity) throws ActivityNotFoundException{
-        ActivityEntity oldActivityEntity = activityRepository.findById(activityId)
+    public Activity updateActivity(long activityId, Activity partialActivity) throws ActivityNotFoundException{
+        ActivityEntity existActivityEntity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ActivityNotFoundException(activityId));
 
-        normalizeDTO(activityId, activity, oldActivityEntity);
+        normalizeDTO(activityId, partialActivity, existActivityEntity);
 
-        ActivityEntity updateEntity = activityMapper.dtoToEntity(activity, mapperContext);
-        computeNotifyTriggerDatetime(updateEntity);
+        activityMapper.updateEntityFromDto(partialActivity, existActivityEntity);
 
-        updateEntity = activityRepository.save(updateEntity);
+        computeNotifyTriggerDatetime(existActivityEntity);
 
-        return activityMapper.entityToDTO(updateEntity);
+        ActivityEntity updatedEntity = activityRepository.save(existActivityEntity);
+
+        return activityMapper.entityToDTO(updatedEntity, mapperContext);
     }
 
     @Override
@@ -96,8 +96,9 @@ public class ActivityServiceImpl implements ActivityService{
 
     private void normalizeDTO(Long activityId, Activity dto, ActivityEntity oldActivityEntity) {
         dto.setActivityId(activityId);
-        if (dto.getStatus() == null) dto.setStatus(ActivityStatus.DRAFT);
-        if (dto.getEndDate() == null) dto.setEndDate(dto.getStartDate().plusHours(1));
+
+        if (dto.getEndDate() == null && dto.getStartDate() != null) dto.setEndDate(dto.getStartDate().plusHours(1));
+
         if (dto.getAutoNotify() != null && dto.getAutoNotify() && dto.getActivityNotification() == null) {
             dto.setActivityNotification(ActivityNotification.builder()
                                             .notifyBefore(5)
@@ -107,8 +108,7 @@ public class ActivityServiceImpl implements ActivityService{
         }
 
         LocalDateTime now = LocalDateTime.now();
-        UserProfile userProfile = userProfileManager.fetchUserProfile();
-        String userId = userProfile != null ? userProfile.getId() : null;
+        String userId = getCurrentUserId();
 
         dto.setModifiedBy(userId);
         dto.setModificationDate(now);
@@ -133,6 +133,11 @@ public class ActivityServiceImpl implements ActivityService{
             };
             activityNotificationEntity.setTriggerDatetime(triggerDatetime);
         }
+    }
+
+    private String getCurrentUserId() {
+        UserProfile userProfile = userProfileManager.fetchUserProfile();
+        return userProfile != null ? userProfile.getId() : null;
     }
 
 }

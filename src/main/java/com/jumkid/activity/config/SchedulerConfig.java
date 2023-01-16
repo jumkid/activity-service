@@ -6,6 +6,7 @@ import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.model.ActivityNotificationEntity;
 import com.jumkid.activity.repository.ActivityNotificationRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
+import com.jumkid.activity.service.mapper.MapperContext;
 import com.jumkid.share.user.UserProfile;
 import com.jumkid.share.user.UserProfileManager;
 import lombok.extern.slf4j.Slf4j;
@@ -37,14 +38,16 @@ public class SchedulerConfig {
     private final UserProfileManager userProfileManager;
 
     private final ActivityMapper activityMapper;
+    private final MapperContext mapperContext;
 
     @Autowired
     public SchedulerConfig(ActivityNotificationRepository activityNotificationRepository,
-                           KafkaTemplate<String, Activity> kafkaTemplate, UserProfileManager userProfileManager, ActivityMapper activityMapper) {
+                           KafkaTemplate<String, Activity> kafkaTemplate, UserProfileManager userProfileManager, ActivityMapper activityMapper, MapperContext mapperContext) {
         this.activityNotificationRepository = activityNotificationRepository;
         this.kafkaTemplate = kafkaTemplate;
         this.userProfileManager = userProfileManager;
         this.activityMapper = activityMapper;
+        this.mapperContext = mapperContext;
     }
 
     @Async
@@ -76,7 +79,7 @@ public class SchedulerConfig {
     }
 
     private void sendNotificationEvent(ActivityEntity activityEntity) {
-        Activity activity = activityMapper.entityToDTO(activityEntity);
+        Activity activity = activityMapper.entityToDTO(activityEntity, mapperContext);
         List<ActivityAssignee> assignees = activity.getActivityAssignees();
         for (ActivityAssignee assignee : assignees) {
             UserProfile userProfile = userProfileManager.fetchUserProfile(assignee.getAssigneeId(), null);

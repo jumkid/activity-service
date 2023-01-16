@@ -140,14 +140,18 @@ components:
         activityId:
           type: integer
         name:
+          required: true
           type: string
         description:
           type: string
         status:
+          required: true
           $ref: '#/components/schemas/ActivityStatus'
         priority:
+          required: true
           $ref: '#/components/schemas/Priority'
         startDate:
+          required: true
           $ref: 'https://raw.githubusercontent.com/jumkid/share-jar/master/src/main/resources/share.yaml#/components/schemas/LocalDateTime'
         endDate:
           $ref: 'https://raw.githubusercontent.com/jumkid/share-jar/master/src/main/resources/share.yaml#/components/schemas/LocalDateTime'

@@ -36,14 +36,14 @@ public class ActivityController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')" +
             " && @activityAccessAuthorizer.isOwner(#activityId)")
-    public Activity getActivity(@PathVariable long activityId) {
+    public Activity get(@PathVariable long activityId) {
         return activityService.getActivity(activityId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')")
-    public Activity addActivity(@NotNull @Valid @RequestBody Activity activity) {
+    public Activity create(@NotNull @Valid @RequestBody Activity activity) {
         log.debug("add new activity");
         return activityService.addActivity(activity);
     }
@@ -52,17 +52,17 @@ public class ActivityController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')" +
             " && @activityAccessAuthorizer.isOwner(#activityId)")
-    public Activity updateActivity(@PathVariable long activityId,
-                                   @NotNull @Valid @RequestBody Activity activity) {
+    public Activity update(@PathVariable long activityId,
+                           @NotNull @RequestBody Activity partialActivity) {
         log.debug("update existing activity with id {}", activityId);
-        return activityService.updateActivity(activityId, activity);
+        return activityService.updateActivity(activityId, partialActivity);
     }
 
     @DeleteMapping(value = "{activityId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')" +
             " && @activityAccessAuthorizer.isOwner(#activityId)")
-    public CommonResponse deleteActivity(@PathVariable long activityId) {
+    public CommonResponse delete(@PathVariable long activityId) {
         log.debug("delete activity by id {}", activityId);
         activityService.deleteActivity(activityId);
         return CommonResponse.builder().success(true).data(String.valueOf(activityId)).build();

@@ -20,6 +20,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.mockito.Mockito.*;
@@ -65,7 +66,20 @@ public class ActivityAPITests {
 
     @Test
     @WithMockUser(username="test", password="test", authorities="USER_ROLE")
-    public void whenGivenActivityId_shouldReturnActivity() throws Exception {
+    public void shouldGetActivitiesByUser() throws Exception {
+        ActivityEntity activityEntity = activityMapper.dtoToEntity(activity, mapperContext);
+        when(activityRepository.findByUser(anyString())).thenReturn(List.of(activityEntity));
+
+        mockMvc.perform(get("/activities/")
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.[0].activityId").value(activity.getActivityId()))
+                .andExpect(jsonPath("$.[0].name").value(activity.getName()));
+    }
+
+    @Test
+    @WithMockUser(username="test", password="test", authorities="USER_ROLE")
+    public void whenGivenActivityId_shouldGetActivity() throws Exception {
         mockMvc.perform(get("/activities/" + activity.getActivityId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())

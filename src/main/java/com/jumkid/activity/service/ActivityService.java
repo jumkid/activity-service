@@ -13,7 +13,7 @@ public interface ActivityService {
 
     public Activity addActivity(Activity activity);
 
-    public Activity updateActivity(long activityId, Activity activity) throws ActivityNotFoundException;
+    public Activity updateActivity(long activityId, Activity partialActivity) throws ActivityNotFoundException;
 
     public void deleteActivity(long activityId);
 }
