@@ -24,7 +24,11 @@ public class ActivityAccessAuthorizer {
 
     public boolean isOwner(long activityId) {
         Optional<ActivityEntity> optional = activityRepository.findById(activityId);
-        return optional.filter(activityEntity -> isCurrentUser(activityEntity.getCreatedBy())).isPresent();
+        if (optional.isPresent()) {
+            return optional.filter(activityEntity -> isCurrentUser(activityEntity.getCreatedBy())).isPresent();
+        } else {
+            throw new ActivityNotFoundException(activityId);
+        }
     }
 
     public boolean isOwner(ActivityEntity activityEntity) {
