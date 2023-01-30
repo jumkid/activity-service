@@ -13,7 +13,6 @@ import java.util.List;
                 ActivityAssigneeMapper.class})
 public interface ActivityMapper {
 
-    @Mapping(target="activityId", source = "entity.activityId")
     @Mapping(target="activityNotification", source="entity.activityNotificationEntity")
     @Mapping(target="activityEntityLinks", source="entity.activityEntityLinkEntities")
     @Mapping(target="activityAssignees", source="entity.activityAssigneeEntities")

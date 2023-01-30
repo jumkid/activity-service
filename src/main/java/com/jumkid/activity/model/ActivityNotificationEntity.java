@@ -14,9 +14,9 @@ import java.time.LocalDateTime;
 public class ActivityNotificationEntity {
 
     @Id
-    @Column(name = "activity_notification_id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long activityNotificationId;
+    private long id;
 
     @Column(name = "notify_before")
     private Integer notifyBefore;
@@ -31,7 +31,7 @@ public class ActivityNotificationEntity {
     @Column(name = "expired")
     private boolean expired;
 
-    @OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name = "activity_id")
     private ActivityEntity activityEntity;
 

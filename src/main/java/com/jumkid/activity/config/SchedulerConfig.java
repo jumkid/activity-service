@@ -65,11 +65,9 @@ public class SchedulerConfig {
                 ActivityEntity activityEntity = activityNotificationEntity.getActivityEntity();
 
                 try {
-                    long notificationId = activityEntity.getActivityNotificationEntity().getActivityNotificationId();
-
                     sendNotificationEvent(activityEntity);
 
-                    expireActivityNotification(notificationId);
+                    expireActivityNotification(activityEntity.getActivityNotificationEntity().getId());
                 } catch (Exception e) {
                     log.error("failed to send notification event: {}", e.getMessage());
                 }
@@ -83,14 +81,16 @@ public class SchedulerConfig {
         List<ActivityAssignee> assignees = activity.getActivityAssignees();
         for (ActivityAssignee assignee : assignees) {
             UserProfile userProfile = userProfileManager.fetchUserProfile(assignee.getAssigneeId(), null);
-            assignee.setAssigneeName(userProfile.getUsername());
-            assignee.setAssigneeEmail(userProfile.getEmail());
+            if (userProfile != null) {
+                assignee.setAssigneeName(userProfile.getUsername());
+                assignee.setAssigneeEmail(userProfile.getEmail());
+            }
         }
 
         activity.setActivityNotification(null); //don't send notification data
         kafkaTemplate.send(kafkaTopicActivityNotify, activity);
 
-        log.info("activity notification for activity id {} event is sent", activity.getActivityId());
+        log.info("activity notification for activity id {} event is sent", activity.getId());
     }
 
     private void expireActivityNotification(long notificationId) {

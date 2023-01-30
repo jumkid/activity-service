@@ -10,11 +10,11 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-@EqualsAndHashCode(of = {"activityContentResourceId"}, callSuper = false)
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class ContentResource {
 
     @Min(0)
-    private Long activityContentResourceId;
+    private Long id;
 
     @Min(0)
     private Long activityId;

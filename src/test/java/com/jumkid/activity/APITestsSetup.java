@@ -17,12 +17,12 @@ class APITestsSetup {
     static Activity buildActivity() {
         LocalDateTime now = LocalDateTime.now();
         return Activity.builder()
-                .activityId(DUMMY_ID)
+                .id(DUMMY_ID)
                 .name("test activity")
                 .description("This is a test activity")
-                .priority(Priority.builder().priorityId(1).build())
+                .priority(Priority.builder().id(1).build())
                 .activityNotification(ActivityNotification.builder()
-                        .activityNotificationId(1L)
+                        .id(1L)
                         .notifyBefore(30)
                         .notifyBeforeUnit(NotifyTimeUnit.MINUTE)
                         .expired(false)

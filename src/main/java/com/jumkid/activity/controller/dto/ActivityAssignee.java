@@ -10,11 +10,11 @@ import javax.validation.constraints.NotBlank;
 @Data
 @Builder
 @JsonIgnoreProperties(ignoreUnknown = true)
-@EqualsAndHashCode(of = {"activityAssigneeId"}, callSuper = false)
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class ActivityAssignee {
 
     @Min(0)
-    private Long activityAssigneeId;
+    private Long id;
 
     @Min(0)
     private Long activityId;

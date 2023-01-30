@@ -95,7 +95,7 @@ public class ActivityServiceImpl implements ActivityService{
     }
 
     private void normalizeDTO(Long activityId, Activity dto, ActivityEntity oldActivityEntity) {
-        dto.setActivityId(activityId);
+        dto.setId(activityId);
 
         if (dto.getEndDate() == null && dto.getStartDate() != null) dto.setEndDate(dto.getStartDate().plusHours(1));
 

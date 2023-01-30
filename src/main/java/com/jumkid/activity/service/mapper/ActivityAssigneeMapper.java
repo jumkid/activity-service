@@ -12,7 +12,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ActivityAssigneeMapper {
 
-    @Mapping(target="activityId", source="entity.activityEntity.activityId")
+    @Mapping(target="id", source="entity.activityEntity.id")
     ActivityAssignee entityToDTO(ActivityAssigneeEntity entity);
 
     @Mapping(target = "activityEntity", ignore = true)

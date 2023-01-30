@@ -23,11 +23,11 @@ import java.util.List;
         second = "startDate",
         greaterThenOrEquals = true)
 @Data
-@EqualsAndHashCode(of = {"activityId"}, callSuper = false)
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class Activity extends GenericDTO {
 
     @Min(0L)
-    private Long activityId;
+    private Long id;
 
     @NotBlank(message = "name is required")
     @Size(max = 255)
@@ -42,13 +42,13 @@ public class Activity extends GenericDTO {
     @NotNull
     private Priority priority;
 
-    @Future
+    @FutureOrPresent
     @NotNull
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime startDate;
 
-    @Future
+    @FutureOrPresent
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime endDate;
@@ -73,12 +73,12 @@ public class Activity extends GenericDTO {
      *
      */
     @Builder
-    public Activity(Long activityId, String name, String description, ActivityStatus status,
+    public Activity(Long id, String name, String description, ActivityStatus status,
                     Priority priority, LocalDateTime startDate, LocalDateTime endDate, ActivityNotification activityNotification,
                     List<ActivityEntityLink> activityEntityLinks, List<ActivityAssignee> activityAssignees,
                     String createdBy, LocalDateTime creationDate, String modifiedBy, LocalDateTime modificationDate) {
         super(createdBy, creationDate, modifiedBy, modificationDate);
-        this.activityId = activityId;
+        this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;

@@ -9,14 +9,14 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @AllArgsConstructor @NoArgsConstructor
-@EqualsAndHashCode(of = {"priorityId"}, callSuper = true)
+@EqualsAndHashCode(of = {"id"}, callSuper = true)
 @Data
 @Builder
 public class Priority extends GenericDTO {
 
     @Min(0)
     @NotNull
-    private int priorityId;
+    private int id;
 
     @NotBlank
     @Size(max = 255)

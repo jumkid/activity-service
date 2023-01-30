@@ -12,11 +12,11 @@ import javax.validation.constraints.NotNull;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Data
 @Builder
-@EqualsAndHashCode(of = {"activityNotificationId"}, callSuper = false)
+@EqualsAndHashCode(of = {"id"}, callSuper = false)
 public class ActivityNotification {
 
     @Min(0)
-    private Long activityNotificationId;
+    private Long id;
 
     @Min(1)
     private Integer notifyBefore;

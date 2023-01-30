@@ -57,7 +57,7 @@ public class ActivityAPITests {
 
             when(activityRepository.save(any(ActivityEntity.class))).thenReturn(activityEntity);
 
-            when(activityRepository.findById(activity.getActivityId()))
+            when(activityRepository.findById(activity.getId()))
                     .thenReturn(Optional.of(activityEntity));
         } catch (Exception e) {
             Assert.fail();
@@ -73,24 +73,24 @@ public class ActivityAPITests {
         mockMvc.perform(get("/activities/")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].activityId").value(activity.getActivityId()))
+                .andExpect(jsonPath("$.[0].id").value(activity.getId()))
                 .andExpect(jsonPath("$.[0].name").value(activity.getName()));
     }
 
     @Test
     @WithMockUser(username="test", password="test", authorities="USER_ROLE")
     public void whenGivenActivityId_shouldGetActivity() throws Exception {
-        mockMvc.perform(get("/activities/" + activity.getActivityId())
+        mockMvc.perform(get("/activities/" + activity.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.activityId").value(activity.getActivityId()))
+                .andExpect(jsonPath("$.id").value(activity.getId()))
                 .andExpect(jsonPath("$.name").value(activity.getName()));
     }
 
     @Test
     @WithMockUser(username="guest", authorities="GUEST_ROLE")
     public void whenAssessAsGuest_shouldReturnForbiddenStat() throws Exception {
-        mockMvc.perform(get("/activities/" + activity.getActivityId())
+        mockMvc.perform(get("/activities/" + activity.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
@@ -98,7 +98,7 @@ public class ActivityAPITests {
     @Test
     @WithMockUser(username="notOwner", password = "notOwner", authorities="USER_ROLE")
     public void whenAssessAsNoOwner_shouldReturnForbiddenStat() throws Exception {
-        mockMvc.perform(get("/activities/" + activity.getActivityId())
+        mockMvc.perform(get("/activities/" + activity.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
@@ -110,7 +110,7 @@ public class ActivityAPITests {
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(new ObjectMapper().writeValueAsBytes(activity)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.activityId").value(activity.getActivityId()))
+                .andExpect(jsonPath("$.id").value(activity.getId()))
                 .andExpect(jsonPath("$.name").value(activity.getName()));
     }
 
@@ -126,18 +126,18 @@ public class ActivityAPITests {
     @Test
     @WithMockUser(username="test", password="test", authorities="USER_ROLE")
     public void whenGivenActivityIdAdActivity_shouldUpdateActivityEntity() throws Exception{
-        mockMvc.perform(put("/activities/" + activity.getActivityId())
+        mockMvc.perform(put("/activities/" + activity.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(activity)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.activityId").value(activity.getActivityId()))
+                .andExpect(jsonPath("$.id").value(activity.getId()))
                 .andExpect(jsonPath("$.name").value(activity.getName()));
     }
 
     @Test
     @WithMockUser(username="guest", authorities="GUEST_ROLE")
     public void whenUpdateAsGuest_shouldReturnForbiddenStat() throws Exception {
-        mockMvc.perform(put("/activities/" + activity.getActivityId())
+        mockMvc.perform(put("/activities/" + activity.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(activity)))
                 .andExpect(status().isForbidden());
@@ -146,7 +146,7 @@ public class ActivityAPITests {
     @Test
     @WithMockUser(username="notOwner", authorities="USER_ROLE")
     public void whenUpdateAsNotOwner_shouldReturnForbiddenStat() throws Exception {
-        mockMvc.perform(put("/activities/" + activity.getActivityId())
+        mockMvc.perform(put("/activities/" + activity.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(activity)))
                 .andExpect(status().isForbidden());
@@ -155,7 +155,7 @@ public class ActivityAPITests {
     @Test
     @WithMockUser(username="test", password="test", authorities="USER_ROLE")
     public void whenGivenActivityId_shouldDeleteActivityEntity() throws Exception{
-        mockMvc.perform(delete("/activities/" + activity.getActivityId())
+        mockMvc.perform(delete("/activities/" + activity.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isNoContent());
     }
@@ -163,7 +163,7 @@ public class ActivityAPITests {
     @Test
     @WithMockUser(username="guest", authorities="GUEST_ROLE")
     public void whenDeleteAsGuest_shouldReturnForbiddenStat() throws Exception{
-        mockMvc.perform(delete("/activities/" + activity.getActivityId())
+        mockMvc.perform(delete("/activities/" + activity.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }
@@ -171,7 +171,7 @@ public class ActivityAPITests {
     @Test
     @WithMockUser(username="notOwner", authorities="USER_ROLE")
     public void whenDeleteAsNotOwner_shouldReturnForbiddenStat() throws Exception{
-        mockMvc.perform(delete("/activities/" + activity.getActivityId())
+        mockMvc.perform(delete("/activities/" + activity.getId())
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isForbidden());
     }

@@ -7,7 +7,6 @@ CREATE TABLE activity (
 
     start_date DATETIME NOT NULL,
     end_date DATETIME,
-    activity_notification_id INTEGER,
 
     created_by VARCHAR(255),
     creation_date DATETIME(3),

@@ -12,7 +12,7 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ActivityEntityLinkMapper {
 
-    @Mapping(target="activityId", source="entity.activityEntity.activityId")
+    @Mapping(target="id", source="entity.activityEntity.id")
     ActivityEntityLink entityToDto(ActivityEntityLinkEntity entity, @Context MapperContext ctx);
 
     @Mapping(target = "activityEntity", ignore = true)
