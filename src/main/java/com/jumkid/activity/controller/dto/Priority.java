@@ -1,5 +1,6 @@
 package com.jumkid.activity.controller.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.jumkid.share.service.dto.GenericDTO;
 import lombok.*;
 
@@ -12,6 +13,7 @@ import javax.validation.constraints.Size;
 @EqualsAndHashCode(of = {"id"}, callSuper = true)
 @Data
 @Builder
+@JsonIgnoreProperties({"createdBy", "creationDate", "modifiedBy", "modificationDate"})
 public class Priority extends GenericDTO {
 
     @Min(0)

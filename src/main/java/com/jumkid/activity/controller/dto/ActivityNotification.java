@@ -18,6 +18,9 @@ public class ActivityNotification {
     @Min(0)
     private Long id;
 
+    @Min(0)
+    private Long activityId;
+
     @Min(1)
     private Integer notifyBefore;
 

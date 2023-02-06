@@ -15,7 +15,7 @@ public class PriorityEntity {
     @Id
     @Column(name = "priority_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int priorityId;
+    private int id;
 
     @Column(name = "identifier")
     private String identifier;

@@ -40,6 +40,7 @@ public class Activity extends GenericDTO {
     private ActivityStatus status;
 
     @NotNull
+    @Valid
     private Priority priority;
 
     @FutureOrPresent

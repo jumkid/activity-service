@@ -52,6 +52,7 @@ public class ActivityEntity {
     private PriorityEntity priorityEntity;
 
     @OneToOne(mappedBy = "activityEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @PrimaryKeyJoinColumn
     private ActivityNotificationEntity activityNotificationEntity;
 
     @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)

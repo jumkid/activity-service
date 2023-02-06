@@ -2,19 +2,19 @@ package com.jumkid.activity.service.mapper;
 
 import com.jumkid.activity.controller.dto.ActivityEntityLink;
 import com.jumkid.activity.model.ActivityEntityLinkEntity;
-import org.mapstruct.Context;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring",
-        uses = {ActivityMapper.class},
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ActivityEntityLinkMapper {
 
-    @Mapping(target="id", source="entity.activityEntity.id")
+    @BeforeMapping
+    default void setParent(ActivityEntityLinkEntity entity, @Context MapperContext ctx){
+        entity.setActivityEntity(ctx.getActivityEntity());
+    }
+
+    @Mapping(target="activityId", source="entity.activityEntity.id")
     ActivityEntityLink entityToDto(ActivityEntityLinkEntity entity, @Context MapperContext ctx);
 
-    @Mapping(target = "activityEntity", ignore = true)
-    ActivityEntityLinkEntity dtoToEntity(ActivityEntityLink dto, @Context MapperContext ctx);
+    ActivityEntityLinkEntity dtoToEntity(ActivityEntityLink dto);
 }

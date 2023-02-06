@@ -1,6 +1,5 @@
 package com.jumkid.activity.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
 import javax.persistence.*;
@@ -16,7 +15,7 @@ public class ActivityAssigneeEntity {
     @Id
     @Column(name = "activity_assignee_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long activityAssigneeId;
+    private Long id;
 
     @NotBlank
     @Column(name = "assignee_id")

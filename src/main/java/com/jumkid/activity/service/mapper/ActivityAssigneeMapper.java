@@ -2,20 +2,21 @@ package com.jumkid.activity.service.mapper;
 
 import com.jumkid.activity.controller.dto.ActivityAssignee;
 import com.jumkid.activity.model.ActivityAssigneeEntity;
-import org.mapstruct.Context;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.NullValuePropertyMappingStrategy;
+import org.mapstruct.*;
 
 @Mapper(componentModel = "spring",
         uses = {ActivityMapper.class},
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ActivityAssigneeMapper {
 
-    @Mapping(target="id", source="entity.activityEntity.id")
-    ActivityAssignee entityToDTO(ActivityAssigneeEntity entity);
+    @BeforeMapping
+    default void setParent(ActivityAssigneeEntity entity, @Context MapperContext ctx){
+        entity.setActivityEntity(ctx.getActivityEntity());
+    }
 
-    @Mapping(target = "activityEntity", ignore = true)
+    @Mapping(target="activityId", source="entity.activityEntity.id")
+    ActivityAssignee entityToDTO(ActivityAssigneeEntity entity, @Context MapperContext ctx);
+
     ActivityAssigneeEntity dtoToEntity(ActivityAssignee dto, @Context MapperContext ctx);
 
 }

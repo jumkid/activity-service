@@ -24,7 +24,7 @@ public class ActivityEntityLinkEntity {
     @Column(name = "entity_name")
     private String entityName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "activity_id")
     private ActivityEntity activityEntity;
 

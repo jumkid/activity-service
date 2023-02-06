@@ -61,9 +61,9 @@ public class ActivityServiceImpl implements ActivityService{
     @Transactional
     public Activity addActivity(Activity activity) {
         normalizeDTO(null, activity, null);
-        ActivityEntity entity = activityMapper.dtoToEntity(activity, mapperContext);
-        computeNotifyTriggerDatetime(entity);
-        ActivityEntity newActivity = activityRepository.save(entity);
+        ActivityEntity newActivity = activityMapper.dtoToEntity(activity, mapperContext);
+        computeNotifyTriggerDatetime(newActivity);
+        newActivity = activityRepository.save(newActivity);
 
         return activityMapper.entityToDTO(newActivity, mapperContext);
     }
@@ -132,6 +132,7 @@ public class ActivityServiceImpl implements ActivityService{
                 case MINUTE -> startDate.minusMinutes(activityNotificationEntity.getNotifyBefore());
             };
             activityNotificationEntity.setTriggerDatetime(triggerDatetime);
+            activityNotificationEntity.setActivityEntity(activityEntity);
         }
     }
 

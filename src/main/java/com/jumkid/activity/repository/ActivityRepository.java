@@ -15,7 +15,7 @@ public interface ActivityRepository extends JpaRepository<ActivityEntity, Long> 
     List<ActivityEntity> findByPriorityEntity(PriorityEntity priorityEntity);
 
     @Query("SELECT a FROM ActivityEntity AS a " +
-            "LEFT JOIN ActivityAssigneeEntity AS b ON a.activityId = b.activityEntity.activityId " +
+            "LEFT JOIN ActivityAssigneeEntity AS b ON a.id = b.activityEntity.id " +
             "WHERE a.createdBy = :userId OR b.assigneeId = :userId")
     List<ActivityEntity> findByUser(@Param("userId") String userId);
 

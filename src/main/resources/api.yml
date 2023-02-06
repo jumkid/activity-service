@@ -137,7 +137,7 @@ components:
     Activity:
       description: Model of activity
       properties:
-        activityId:
+        id:
           type: integer
         name:
           required: true
@@ -185,7 +185,7 @@ components:
     ActivityNotification:
       description: model of notification
       properties:
-        activityNotificationId:
+        id:
           type: integer
         expired:
           type: boolean
@@ -209,7 +209,7 @@ components:
     Priority:
       description: model of priority
       properties:
-        priorityId:
+        id:
           type: integer
         identifier:
           type: string
