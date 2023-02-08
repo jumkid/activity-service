@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import javax.validation.ConstraintViolationException;
 import java.util.Calendar;
 import java.util.stream.Collectors;
 
@@ -41,6 +42,12 @@ public class ExceptionHandlingAdvice {
     @ResponseStatus(BAD_REQUEST)
     public CustomErrorResponse handle(InvalidFormatException ex) {
         log.info("Datetime string value is invalid.", ex);
+        return new CustomErrorResponse(Calendar.getInstance().getTime(), ex.getMessage());
+    }
+
+    @ExceptionHandler({ConstraintViolationException.class})
+    @ResponseStatus(BAD_REQUEST)
+    public CustomErrorResponse handle(ConstraintViolationException ex) {
         return new CustomErrorResponse(Calendar.getInstance().getTime(), ex.getMessage());
     }
 

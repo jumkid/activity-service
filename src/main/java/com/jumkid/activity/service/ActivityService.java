@@ -11,6 +11,8 @@ public interface ActivityService {
 
     public List<Activity> getUserActivities();
 
+    public List<Activity> getEntityLinkedActivities(String entityId, String entityName);
+
     public Activity addActivity(Activity activity);
 
     public Activity updateActivity(long activityId, Activity partialActivity) throws ActivityNotFoundException;

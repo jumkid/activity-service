@@ -32,7 +32,20 @@ paths:
     get:
       tags: ['v1']
       operationId: getActivities
-      description: get all activities
+      description: get all activities by user
+      parameters:
+        - name: entityId
+          in: query
+          required: false
+          description: activity link entity identifier
+          schema:
+            type: string
+        - name: entityName
+          in: query
+          required: false
+          description: activity link entity name
+          schema:
+            type: string    
       responses:
         '200':
           description: OK

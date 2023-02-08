@@ -58,6 +58,13 @@ public class ActivityServiceImpl implements ActivityService{
     }
 
     @Override
+    public List<Activity> getEntityLinkedActivities(String entityId, String entityName) {
+        log.debug("fetch all activities linked to the entity id:[{}] name:[{}] for current user ", entityId, entityName);
+        return activityMapper
+                .entitiesToDTOS(activityRepository.findByEntityLink(entityId, entityName, getCurrentUserId()));
+    }
+
+    @Override
     @Transactional
     public Activity addActivity(Activity activity) {
         normalizeDTO(null, activity, null);

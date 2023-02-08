@@ -19,4 +19,11 @@ public interface ActivityRepository extends JpaRepository<ActivityEntity, Long> 
             "WHERE a.createdBy = :userId OR b.assigneeId = :userId")
     List<ActivityEntity> findByUser(@Param("userId") String userId);
 
+    @Query("SELECT a FROM ActivityEntity AS a " +
+            "LEFT JOIN ActivityAssigneeEntity AS b ON a.id = b.activityEntity.id " +
+            "LEFT JOIN ActivityEntityLinkEntity AS c ON a.id = c.activityEntity.id " +
+            "WHERE (c.entityId = :entityId AND c.entityName = :entityName) " +
+            "AND (a.createdBy = :userId OR b.assigneeId = :userId) ")
+    List<ActivityEntity> findByEntityLink(@Param("entityId") String entityId,
+            @Param("entityName") String entityName, @Param("userId") String userId);
 }

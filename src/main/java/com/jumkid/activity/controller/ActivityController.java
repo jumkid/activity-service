@@ -7,14 +7,19 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Slf4j
 @RestController
+@Validated
 @RequestMapping("/activities")
 public class ActivityController {
 
@@ -28,8 +33,14 @@ public class ActivityController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')")
-    public List<Activity> getActivities() {
-        return activityService.getUserActivities();
+    public List<Activity> getActivities(@RequestParam(required = false)
+                                            @Pattern(regexp = "^\\S+$", message = "invalid entity id")
+                                                    String entityId,
+                                        @RequestParam(required = false)
+                                            @Pattern(regexp="^\\S+$", message = "invalid entity name")
+                                                String entityName) {
+        if (entityId == null && entityName == null) return activityService.getUserActivities();
+        else return activityService.getEntityLinkedActivities(entityId, entityName);
     }
 
     @GetMapping("{activityId}")
