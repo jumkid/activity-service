@@ -7,15 +7,15 @@ import java.util.List;
 
 public interface ActivityService {
 
-    public Activity getActivity(long activityId) throws ActivityNotFoundException;
+    Activity getActivity(long activityId) throws ActivityNotFoundException;
 
-    public List<Activity> getUserActivities();
+    List<Activity> getUserActivities();
 
-    public List<Activity> getEntityLinkedActivities(String entityId, String entityName);
+    List<Activity> getEntityLinkedActivities(String entityId, String entityName);
 
-    public Activity addActivity(Activity activity);
+    Activity addActivity(Activity activity);
 
-    public Activity updateActivity(long activityId, Activity partialActivity) throws ActivityNotFoundException;
+    Activity updateActivity(long activityId, Activity partialActivity) throws ActivityNotFoundException;
 
-    public void deleteActivity(long activityId);
+    void deleteActivity(long activityId);
 }

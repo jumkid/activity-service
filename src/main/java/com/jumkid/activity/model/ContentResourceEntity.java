@@ -13,15 +13,15 @@ import javax.validation.constraints.NotBlank;
 public class ContentResourceEntity {
 
     @Id
-    @Column(name = "activity_content_resource_id")
+    @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long activityContentResourceId;
+    private Long id;
 
     @NotBlank
     @Column(name = "content_resource_id")
     private String contentResourceId;
 
-    @ManyToOne(cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "activity_id")
     private ActivityEntity activityEntity;
 

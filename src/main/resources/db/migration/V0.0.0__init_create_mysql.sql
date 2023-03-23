@@ -37,7 +37,7 @@ CREATE TABLE activity_notification (
 );
 
 CREATE TABLE activity_content_resource (
-    activity_content_resource_id INTEGER AUTO_INCREMENT PRIMARY KEY,
+    id INTEGER AUTO_INCREMENT PRIMARY KEY,
     activity_id INTEGER NOT NULL,
     content_resource_id VARCHAR(255) NOT NULL,
     FOREIGN KEY (activity_id)

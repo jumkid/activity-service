@@ -75,8 +75,10 @@ public class Activity extends GenericDTO {
      */
     @Builder
     public Activity(Long id, String name, String description, ActivityStatus status,
-                    Priority priority, LocalDateTime startDate, LocalDateTime endDate, ActivityNotification activityNotification,
+                    Priority priority, LocalDateTime startDate, LocalDateTime endDate,
+                    ActivityNotification activityNotification,
                     List<ActivityEntityLink> activityEntityLinks, List<ActivityAssignee> activityAssignees,
+                    List<ContentResource> contentResources,
                     String createdBy, LocalDateTime creationDate, String modifiedBy, LocalDateTime modificationDate) {
         super(createdBy, creationDate, modifiedBy, modificationDate);
         this.id = id;
@@ -89,6 +91,7 @@ public class Activity extends GenericDTO {
         this.activityNotification = activityNotification;
         this.activityEntityLinks = activityEntityLinks;
         this.activityAssignees = activityAssignees;
+        this.contentResources = contentResources;
     }
 
 }

@@ -83,7 +83,7 @@ public class ActivityServiceImpl implements ActivityService{
 
         normalizeDTO(activityId, partialActivity, existActivityEntity);
 
-        activityMapper.updateEntityFromDto(partialActivity, existActivityEntity);
+        activityMapper.updateEntityFromDto(partialActivity, existActivityEntity, mapperContext);
 
         computeNotifyTriggerDatetime(existActivityEntity);
 
@@ -104,7 +104,7 @@ public class ActivityServiceImpl implements ActivityService{
     private void normalizeDTO(Long activityId, Activity dto, ActivityEntity oldActivityEntity) {
         dto.setId(activityId);
 
-        if (dto.getEndDate() == null && dto.getStartDate() != null) dto.setEndDate(dto.getStartDate().plusHours(1));
+        if (dto.getEndDate() == null) dto.setEndDate(dto.getStartDate().plusHours(1));
 
         if (dto.getAutoNotify() != null && dto.getAutoNotify() && dto.getActivityNotification() == null) {
             dto.setActivityNotification(ActivityNotification.builder()

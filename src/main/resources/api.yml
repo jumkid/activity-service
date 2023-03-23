@@ -28,7 +28,7 @@ security:
   - bearerAuth: []
 
 paths:
-  /activities:
+  '/activities':
     get:
       tags: ['v1']
       operationId: getActivities
@@ -73,7 +73,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/Activity'
 
-  /activities/{activityId}:
+  '/activities/{activityId}':
     get:
       tags: ['v1']
       operationId: getActivity
@@ -144,6 +144,36 @@ paths:
                     type: string
                   data:
                     type: string
+
+  '/activity/priorities':
+    get:
+      tags: ['v1']
+      operationId: getPriorities
+      description: get all priorities of activity
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Priority'
+
+  '/activity/statuses':
+    get:
+      tags: ['v1']
+      operationId: getStatuses
+      description: get all statues of activity
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ActivityStatus'
 
 components:
   schemas:
