@@ -1,5 +1,7 @@
 package com.jumkid.activity.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jumkid.activity.controller.dto.Activity;
 import com.jumkid.activity.controller.dto.ActivityAssignee;
 import com.jumkid.activity.model.ActivityEntity;
@@ -7,8 +9,10 @@ import com.jumkid.activity.model.ActivityNotificationEntity;
 import com.jumkid.activity.repository.ActivityNotificationRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
 import com.jumkid.activity.service.mapper.MapperContext;
+import com.jumkid.share.event.ActivityEvent;
 import com.jumkid.share.user.UserProfile;
 import com.jumkid.share.user.UserProfileManager;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,22 +22,25 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
-import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Configuration
 @EnableScheduling
 public class SchedulerConfig {
 
+    @Value("${spring.application.name}")
+    private String appName;
+
     @Value("${spring.kafka.topic.name.activity.notify}")
     private String kafkaTopicActivityNotify;
 
     private final ActivityNotificationRepository activityNotificationRepository;
 
-    private final KafkaTemplate<String, Activity> kafkaTemplate;
+    private final KafkaTemplate<String, ActivityEvent> kafkaTemplate;
 
     private final UserProfileManager userProfileManager;
 
@@ -42,7 +49,7 @@ public class SchedulerConfig {
 
     @Autowired
     public SchedulerConfig(ActivityNotificationRepository activityNotificationRepository,
-                           KafkaTemplate<String, Activity> kafkaTemplate, UserProfileManager userProfileManager, ActivityMapper activityMapper, MapperContext mapperContext) {
+                           KafkaTemplate<String, ActivityEvent> kafkaTemplate, UserProfileManager userProfileManager, ActivityMapper activityMapper, MapperContext mapperContext) {
         this.activityNotificationRepository = activityNotificationRepository;
         this.kafkaTemplate = kafkaTemplate;
         this.userProfileManager = userProfileManager;
@@ -87,10 +94,26 @@ public class SchedulerConfig {
             }
         }
 
-        activity.setActivityNotification(null); //don't send notification data
-        kafkaTemplate.send(kafkaTopicActivityNotify, activity);
+        try {
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String json = ow.writeValueAsString(activity);
 
-        log.info("activity notification for activity id {} event is sent", activity.getId());
+            kafkaTemplate.send(kafkaTopicActivityNotify, ActivityEvent.builder()
+                    .activityId(activity.getId())
+                    .topic(kafkaTopicActivityNotify)
+                    .creationDate(LocalDateTime.now())
+                    .sentBy(appName)
+                    .journeyId(UUID.randomUUID().toString())
+                    .payload(json)
+                    .build());
+
+            activity.setActivityNotification(null);  //set null when notification is sent
+
+            log.info("activity notification for activity id {} event is sent", activity.getId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("Failed to send kafka event: {}", e.getMessage());
+        }
     }
 
     private void expireActivityNotification(long notificationId) {

@@ -1,6 +1,7 @@
 package com.jumkid.activity.config;
 
-import com.jumkid.activity.controller.dto.Activity;
+import com.jumkid.share.event.ActivityEvent;
+import com.jumkid.share.event.ContentEvent;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -27,9 +28,17 @@ public class KafkaProducerConfig {
     @Value("${spring.kafka.topic.name.activity.notify}")
     private String kafkaTopicActivityNotify;
 
+    @Value("${spring.kafka.topic.name.content.delete}")
+    private String kafkaTopicContentDelete;
+
     @Bean
-    public NewTopic topic() {
+    public NewTopic topic1() {
         return TopicBuilder.name(kafkaTopicActivityNotify).build();
+    }
+
+    @Bean
+    public NewTopic topic2() {
+        return TopicBuilder.name(kafkaTopicContentDelete).build();
     }
 
     @Bean
@@ -40,7 +49,16 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public ProducerFactory<String, Activity> activityProducerFactory() {
+    public ProducerFactory<String, ActivityEvent> activityProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(getConfigMap());
+    }
+
+    @Bean
+    public ProducerFactory<String, ContentEvent> contentResourceProducerFactory() {
+        return new DefaultKafkaProducerFactory<>(getConfigMap());
+    }
+
+    private Map<String, Object> getConfigMap() {
         Map<String, Object> configProps = new HashMap<>();
 
         configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, bootstrapAddress);
@@ -50,12 +68,17 @@ public class KafkaProducerConfig {
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
 
-        return new DefaultKafkaProducerFactory<>(configProps);
+        return configProps;
     }
 
     @Bean
-    public KafkaTemplate<String, Activity> kafkaTemplate() {
+    public KafkaTemplate<String, ActivityEvent> kafkaTemplate1() {
         return new KafkaTemplate<>(activityProducerFactory());
+    }
+
+    @Bean
+    public KafkaTemplate<String, ContentEvent> kafkaTemplate2() {
+        return new KafkaTemplate<>(contentResourceProducerFactory());
     }
 
 }

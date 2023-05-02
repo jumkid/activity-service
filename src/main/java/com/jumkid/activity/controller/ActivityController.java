@@ -3,6 +3,9 @@ package com.jumkid.activity.controller;
 import com.jumkid.activity.controller.dto.Activity;
 import com.jumkid.activity.service.ActivityService;
 import com.jumkid.share.controller.response.CommonResponse;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,11 +13,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 import java.util.List;
 
 @Slf4j
@@ -33,7 +31,7 @@ public class ActivityController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')")
-    public List<Activity> getActivities(@RequestParam(required = false)
+    public List<Activity> getAll(@RequestParam(required = false)
                                             @Pattern(regexp = "^\\S+$", message = "invalid entity id")
                                                     String entityId,
                                         @RequestParam(required = false)

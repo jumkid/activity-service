@@ -2,7 +2,8 @@ package com.jumkid.activity.model;
 
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "activity_entity_link")
@@ -28,4 +29,16 @@ public class ActivityEntityLinkEntity {
     @JoinColumn(name = "activity_id")
     private ActivityEntity activityEntity;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ActivityEntityLinkEntity that = (ActivityEntityLinkEntity) o;
+        return Objects.equals(entityId, that.entityId) && Objects.equals(entityName, that.entityName) && Objects.equals(activityEntity, that.activityEntity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(entityId, entityName, activityEntity);
+    }
 }

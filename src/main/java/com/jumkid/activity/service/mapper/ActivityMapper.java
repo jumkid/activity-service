@@ -39,32 +39,9 @@ public interface ActivityMapper {
     ActivityEntity dtoToEntity(Activity dto, @Context MapperContext ctx);
 
     @Mapping(target="activityNotificationEntity", source="partialDto.activityNotification")
-    @Mapping(target="activityEntityLinkEntities", source="partialDto.activityEntityLinks")
-    @Mapping(target="activityAssigneeEntities", source="partialDto.activityAssignees")
-    @Mapping(target="contentResourceEntities", source="partialDto.contentResources")
     @Mapping(target="priorityEntity", source="partialDto.priority")
     void updateEntityFromDto(Activity partialDto, @MappingTarget ActivityEntity updateEntity,
                              @Context MapperContext ctx);
 
     List<Activity> entitiesToDTOS(List<ActivityEntity> entities);
-
-    @AfterMapping
-    default void setParent(@MappingTarget ActivityEntity updateEntity, @Context MapperContext ctx) {
-        ActivityEntity parent = ctx.getActivityEntity();
-        if (updateEntity.getActivityEntityLinkEntities() != null) {
-            updateEntity.getActivityEntityLinkEntities().forEach(
-                    entityLinkEntity -> entityLinkEntity.setActivityEntity(parent)
-            );
-        }
-        if (updateEntity.getActivityAssigneeEntities() != null) {
-            updateEntity.getActivityAssigneeEntities().forEach(
-                    assigneeEntity -> assigneeEntity.setActivityEntity(parent)
-            );
-        }
-        if (updateEntity.getContentResourceEntities() != null) {
-            updateEntity.getContentResourceEntities().forEach(
-                    contentResourceEntity -> contentResourceEntity.setActivityEntity(parent)
-            );
-        }
-    }
 }

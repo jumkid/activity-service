@@ -3,7 +3,7 @@ package com.jumkid.activity.model;
 import com.jumkid.activity.enums.ActivityStatus;
 import lombok.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 import java.util.List;
 

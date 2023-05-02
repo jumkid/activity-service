@@ -1,9 +1,9 @@
 package com.jumkid.activity.controller.validation;
 
+import jakarta.validation.ConstraintValidator;
+import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
 
-import javax.validation.ConstraintValidator;
-import javax.validation.ConstraintValidatorContext;
 import java.time.LocalDateTime;
 
 public class ValidDateComparisonValidator implements ConstraintValidator<ValidDateComparison, Object> {

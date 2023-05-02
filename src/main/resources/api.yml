@@ -175,6 +175,40 @@ paths:
                 items:
                   $ref: '#/components/schemas/ActivityStatus'
 
+  '/activity/content':
+    post:
+      tags: ['v1']
+      operationId: add
+      description: add new content resource to activity
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContentResource'
+      responses:
+        '200':        
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContentResource'
+
+  '/activity/content/{id}':           
+    delete:
+      tags: ['v1']
+      operationId: delete
+      description: delete a content resource
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: content identifier
+          schema:
+            type: string
+      responses:
+        '204':        
+          description: NO_CONTENT
+
 components:
   schemas:
     Activity:
@@ -248,6 +282,16 @@ components:
           type: string
         entityName:
           type: string       
+
+    ContentResource:
+      description: model of content resource
+      properties:
+        id:
+          type: integer
+        activityId:
+          type: integer
+        contentResourceId:
+          type: string
 
     Priority:
       description: model of priority

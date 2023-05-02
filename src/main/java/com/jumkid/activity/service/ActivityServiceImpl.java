@@ -9,14 +9,17 @@ import com.jumkid.activity.model.ActivityNotificationEntity;
 import com.jumkid.activity.repository.ActivityRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
 import com.jumkid.activity.service.mapper.MapperContext;
+import com.jumkid.share.exception.ModificationDatetimeNotFoundException;
+import com.jumkid.share.exception.ModificationDatetimeOutdatedException;
 import com.jumkid.share.user.UserProfile;
 import com.jumkid.share.user.UserProfileManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import jakarta.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -104,7 +107,9 @@ public class ActivityServiceImpl implements ActivityService{
     private void normalizeDTO(Long activityId, Activity dto, ActivityEntity oldActivityEntity) {
         dto.setId(activityId);
 
-        if (dto.getEndDate() == null) dto.setEndDate(dto.getStartDate().plusHours(1));
+        if (dto.getEndDate() == null && dto.getStartDate() != null) {
+            dto.setEndDate(dto.getStartDate().plusHours(1));
+        }
 
         if (dto.getAutoNotify() != null && dto.getAutoNotify() && dto.getActivityNotification() == null) {
             dto.setActivityNotification(ActivityNotification.builder()
@@ -117,16 +122,23 @@ public class ActivityServiceImpl implements ActivityService{
         LocalDateTime now = LocalDateTime.now();
         String userId = getCurrentUserId();
 
-        dto.setModifiedBy(userId);
-        dto.setModificationDate(now);
-
         if (oldActivityEntity != null) {
             dto.setCreatedBy(oldActivityEntity.getCreatedBy());
             dto.setCreationDate(oldActivityEntity.getCreationDate());
+
+            if (dto.getModificationDate() == null) { throw new ModificationDatetimeNotFoundException(); }
+
+            if (oldActivityEntity.getModificationDate() == null || !oldActivityEntity.getModificationDate().truncatedTo(ChronoUnit.MILLIS)
+                    .equals(dto.getModificationDate().truncatedTo(ChronoUnit.MILLIS))) {
+                throw new ModificationDatetimeOutdatedException();
+            }
         } else {
             dto.setCreatedBy(userId);  //UserDetail uses password to carry user id
             dto.setCreationDate(now);
         }
+
+        dto.setModifiedBy(userId);
+        dto.setModificationDate(now.truncatedTo(ChronoUnit.MILLIS));
     }
 
     private void computeNotifyTriggerDatetime(ActivityEntity activityEntity) {

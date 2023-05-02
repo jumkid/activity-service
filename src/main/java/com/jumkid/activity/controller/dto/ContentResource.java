@@ -1,10 +1,9 @@
 package com.jumkid.activity.controller.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-
-import javax.validation.constraints.Min;
-import javax.validation.constraints.NotBlank;
 
 @AllArgsConstructor @NoArgsConstructor
 @Data

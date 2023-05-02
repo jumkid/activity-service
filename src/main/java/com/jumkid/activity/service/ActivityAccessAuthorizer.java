@@ -1,8 +1,11 @@
 package com.jumkid.activity.service;
 
 import com.jumkid.activity.exception.ActivityNotFoundException;
+import com.jumkid.activity.exception.ContentResourceNotFoundException;
 import com.jumkid.activity.model.ActivityEntity;
+import com.jumkid.activity.model.ContentResourceEntity;
 import com.jumkid.activity.repository.ActivityRepository;
+import com.jumkid.activity.repository.ContentResourceRepository;
 import com.jumkid.share.security.exception.UserProfileNotFoundException;
 import com.jumkid.share.user.UserProfile;
 import com.jumkid.share.user.UserProfileManager;
@@ -16,10 +19,12 @@ public class ActivityAccessAuthorizer {
     private final UserProfileManager userProfileManager;
 
     private final ActivityRepository activityRepository;
+    private final ContentResourceRepository contentResourceRepository;
 
-    public ActivityAccessAuthorizer(UserProfileManager userProfileManager, ActivityRepository activityRepository) {
+    public ActivityAccessAuthorizer(UserProfileManager userProfileManager, ActivityRepository activityRepository, ContentResourceRepository contentResourceRepository) {
         this.userProfileManager = userProfileManager;
         this.activityRepository = activityRepository;
+        this.contentResourceRepository = contentResourceRepository;
     }
 
     public boolean isOwner(long activityId) {
@@ -33,6 +38,14 @@ public class ActivityAccessAuthorizer {
 
     public boolean isOwner(ActivityEntity activityEntity) {
         return isCurrentUser(activityEntity.getCreatedBy());
+    }
+
+    public boolean hasPermissionForContentResource(long contentResourceId) {
+        Optional<ContentResourceEntity> optional = contentResourceRepository.findById(contentResourceId);
+        if (optional.isPresent()) {
+            Long activityId = optional.get().getActivityEntity().getId();
+            return isOwner(activityId) || isAssignee(activityId);
+        } throw new ContentResourceNotFoundException(contentResourceId);
     }
 
     public boolean isAssignee(long activityId) {

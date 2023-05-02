@@ -1,9 +1,10 @@
 package com.jumkid.activity.model;
 
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
-import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
+import java.util.Objects;
 
 @Entity
 @Table(name = "activity_assignee")
@@ -25,4 +26,16 @@ public class ActivityAssigneeEntity {
     @JoinColumn(name = "activity_id")
     private ActivityEntity activityEntity;
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ActivityAssigneeEntity that = (ActivityAssigneeEntity) o;
+        return Objects.equals(assigneeId, that.assigneeId) && Objects.equals(activityEntity, that.activityEntity);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(assigneeId, activityEntity);
+    }
 }

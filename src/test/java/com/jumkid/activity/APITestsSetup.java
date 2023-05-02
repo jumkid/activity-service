@@ -40,6 +40,7 @@ class APITestsSetup {
                 .endDate(now.plusDays(2))
                 .createdBy("test")
                 .creationDate(now)
+                .modificationDate(now)
                 .build();
     }
 

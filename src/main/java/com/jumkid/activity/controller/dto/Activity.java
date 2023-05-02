@@ -9,10 +9,10 @@ import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import com.jumkid.activity.controller.validation.ValidDateComparison;
 import com.jumkid.activity.enums.ActivityStatus;
 import com.jumkid.share.service.dto.GenericDTO;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.*;
 import lombok.*;
 
-import javax.validation.Valid;
-import javax.validation.constraints.*;
 import java.time.LocalDateTime;
 import java.util.List;
 

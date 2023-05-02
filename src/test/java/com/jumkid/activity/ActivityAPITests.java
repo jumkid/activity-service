@@ -57,8 +57,7 @@ public class ActivityAPITests {
 
             when(activityRepository.save(any(ActivityEntity.class))).thenReturn(activityEntity);
 
-            when(activityRepository.findById(activity.getId()))
-                    .thenReturn(Optional.of(activityEntity));
+            when(activityRepository.findById(activity.getId())).thenReturn(Optional.of(activityEntity));
         } catch (Exception e) {
             Assert.fail();
         }
@@ -70,7 +69,7 @@ public class ActivityAPITests {
         ActivityEntity activityEntity = activityMapper.dtoToEntity(activity, mapperContext);
         when(activityRepository.findByUser(anyString())).thenReturn(List.of(activityEntity));
 
-        mockMvc.perform(get("/activities/")
+        mockMvc.perform(get("/activities")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.[0].id").value(activity.getId()))
@@ -125,7 +124,7 @@ public class ActivityAPITests {
 
     @Test
     @WithMockUser(username="test", password="test", authorities="USER_ROLE")
-    public void whenGivenActivityIdAdActivity_shouldUpdateActivityEntity() throws Exception{
+    public void whenGivenActivityIdAndActivity_shouldUpdateActivityEntity() throws Exception{
         mockMvc.perform(put("/activities/" + activity.getId())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(new ObjectMapper().writeValueAsBytes(activity)))
