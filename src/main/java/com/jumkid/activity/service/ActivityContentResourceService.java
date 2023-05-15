@@ -10,4 +10,6 @@ public interface ActivityContentResourceService {
 
     void delete(Long id) throws ContentResourceNotFoundException;
 
+    void sendContentDeleteEvent(String contentId);
+
 }

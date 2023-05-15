@@ -28,6 +28,9 @@ public class KafkaProducerConfig {
     @Value("${spring.kafka.topic.name.activity.notify}")
     private String kafkaTopicActivityNotify;
 
+    @Value("${spring.kafka.topic.name.activity.delete}")
+    private String kafkaTopicActivityDelete;
+
     @Value("${spring.kafka.topic.name.content.delete}")
     private String kafkaTopicContentDelete;
 
@@ -38,6 +41,11 @@ public class KafkaProducerConfig {
 
     @Bean
     public NewTopic topic2() {
+        return TopicBuilder.name(kafkaTopicActivityDelete).build();
+    }
+
+    @Bean
+    public NewTopic topic3() {
         return TopicBuilder.name(kafkaTopicContentDelete).build();
     }
 
@@ -72,12 +80,12 @@ public class KafkaProducerConfig {
     }
 
     @Bean
-    public KafkaTemplate<String, ActivityEvent> kafkaTemplate1() {
+    public KafkaTemplate<String, ActivityEvent> kafkaTemplateForActivity() {
         return new KafkaTemplate<>(activityProducerFactory());
     }
 
     @Bean
-    public KafkaTemplate<String, ContentEvent> kafkaTemplate2() {
+    public KafkaTemplate<String, ContentEvent> kafkaTemplateForContent() {
         return new KafkaTemplate<>(contentResourceProducerFactory());
     }
 

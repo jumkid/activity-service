@@ -17,5 +17,5 @@ public interface ActivityService {
 
     Activity updateActivity(long activityId, Activity partialActivity) throws ActivityNotFoundException;
 
-    void deleteActivity(long activityId);
+    Integer deleteActivity(long activityId);
 }

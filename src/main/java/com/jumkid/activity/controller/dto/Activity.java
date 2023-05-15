@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
+import com.jumkid.activity.controller.validation.TodayOrFuture;
 import com.jumkid.activity.controller.validation.ValidDateComparison;
 import com.jumkid.activity.enums.ActivityStatus;
 import com.jumkid.share.service.dto.GenericDTO;
@@ -43,13 +44,13 @@ public class Activity extends GenericDTO {
     @Valid
     private Priority priority;
 
-    @FutureOrPresent
+    @TodayOrFuture
     @NotNull
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime startDate;
 
-    @FutureOrPresent
+    @TodayOrFuture
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     private LocalDateTime endDate;

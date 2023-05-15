@@ -40,7 +40,7 @@ public class SchedulerConfig {
 
     private final ActivityNotificationRepository activityNotificationRepository;
 
-    private final KafkaTemplate<String, ActivityEvent> kafkaTemplate;
+    private final KafkaTemplate<String, ActivityEvent> kafkaTemplateForActivity;
 
     private final UserProfileManager userProfileManager;
 
@@ -49,9 +49,9 @@ public class SchedulerConfig {
 
     @Autowired
     public SchedulerConfig(ActivityNotificationRepository activityNotificationRepository,
-                           KafkaTemplate<String, ActivityEvent> kafkaTemplate, UserProfileManager userProfileManager, ActivityMapper activityMapper, MapperContext mapperContext) {
+                           KafkaTemplate<String, ActivityEvent> kafkaTemplateForActivity, UserProfileManager userProfileManager, ActivityMapper activityMapper, MapperContext mapperContext) {
         this.activityNotificationRepository = activityNotificationRepository;
-        this.kafkaTemplate = kafkaTemplate;
+        this.kafkaTemplateForActivity = kafkaTemplateForActivity;
         this.userProfileManager = userProfileManager;
         this.activityMapper = activityMapper;
         this.mapperContext = mapperContext;
@@ -98,7 +98,7 @@ public class SchedulerConfig {
             ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
             String json = ow.writeValueAsString(activity);
 
-            kafkaTemplate.send(kafkaTopicActivityNotify, ActivityEvent.builder()
+            kafkaTemplateForActivity.send(kafkaTopicActivityNotify, ActivityEvent.builder()
                     .activityId(activity.getId())
                     .topic(kafkaTopicActivityNotify)
                     .creationDate(LocalDateTime.now())

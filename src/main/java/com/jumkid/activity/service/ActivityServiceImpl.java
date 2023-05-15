@@ -1,20 +1,27 @@
 package com.jumkid.activity.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.jumkid.activity.controller.dto.Activity;
 import com.jumkid.activity.controller.dto.ActivityNotification;
 import com.jumkid.activity.enums.NotifyTimeUnit;
 import com.jumkid.activity.exception.ActivityNotFoundException;
 import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.model.ActivityNotificationEntity;
+import com.jumkid.activity.model.ContentResourceEntity;
 import com.jumkid.activity.repository.ActivityRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
 import com.jumkid.activity.service.mapper.MapperContext;
+import com.jumkid.share.event.ActivityEvent;
 import com.jumkid.share.exception.ModificationDatetimeNotFoundException;
 import com.jumkid.share.exception.ModificationDatetimeOutdatedException;
 import com.jumkid.share.user.UserProfile;
 import com.jumkid.share.user.UserProfileManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 import jakarta.transaction.Transactional;
@@ -22,12 +29,23 @@ import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service("activityService")
 public class ActivityServiceImpl implements ActivityService{
 
+    @Value("${spring.application.name}")
+    private String appName;
+
+    @Value("${spring.kafka.topic.name.activity.delete}")
+    private String kafkaTopicActivityDelete;
+
+    private final KafkaTemplate<String, ActivityEvent> kafkaTemplateForActivity;
+
     private final ActivityRepository activityRepository;
+
+    private final ActivityContentResourceService activityContentResourceService;
 
     private final UserProfileManager userProfileManager;
 
@@ -35,9 +53,15 @@ public class ActivityServiceImpl implements ActivityService{
     private final MapperContext mapperContext;
 
     @Autowired
-    public ActivityServiceImpl(ActivityRepository activityRepository, UserProfileManager userProfileManager,
-                               ActivityMapper activityMapper, MapperContext mapperContext) {
+    public ActivityServiceImpl(KafkaTemplate<String, ActivityEvent> kafkaTemplateForActivity,
+                               ActivityRepository activityRepository,
+                               ActivityContentResourceService activityContentResourceService,
+                               UserProfileManager userProfileManager,
+                               ActivityMapper activityMapper,
+                               MapperContext mapperContext) {
+        this.kafkaTemplateForActivity = kafkaTemplateForActivity;
         this.activityRepository = activityRepository;
+        this.activityContentResourceService = activityContentResourceService;
         this.userProfileManager = userProfileManager;
         this.activityMapper = activityMapper;
         this.mapperContext = mapperContext;
@@ -97,11 +121,26 @@ public class ActivityServiceImpl implements ActivityService{
 
     @Override
     @Transactional
-    public void deleteActivity(long activityId) {
+    public Integer deleteActivity(long activityId) {
         ActivityEntity oldActivityEntity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ActivityNotFoundException(activityId));
 
-        activityRepository.delete(oldActivityEntity);
+        try {
+            List<ContentResourceEntity>  contentResourceEntities = oldActivityEntity.getContentResourceEntities();
+
+            activityRepository.delete(oldActivityEntity);
+
+            this.sendActivityDeleteEvent(activityMapper.entityToDTO(oldActivityEntity, mapperContext));
+            for (ContentResourceEntity contentResourceEntity : contentResourceEntities) {
+                activityContentResourceService.sendContentDeleteEvent(contentResourceEntity.getContentResourceId());
+            }
+
+            return 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            log.error("Failed to delete activity {} due to: {}", activityId, e.getMessage());
+            return 0;
+        }
     }
 
     private void normalizeDTO(Long activityId, Activity dto, ActivityEntity oldActivityEntity) {
@@ -128,7 +167,8 @@ public class ActivityServiceImpl implements ActivityService{
 
             if (dto.getModificationDate() == null) { throw new ModificationDatetimeNotFoundException(); }
 
-            if (oldActivityEntity.getModificationDate() == null || !oldActivityEntity.getModificationDate().truncatedTo(ChronoUnit.MILLIS)
+            if (oldActivityEntity.getModificationDate() == null
+                    || !oldActivityEntity.getModificationDate().truncatedTo(ChronoUnit.MILLIS)
                     .equals(dto.getModificationDate().truncatedTo(ChronoUnit.MILLIS))) {
                 throw new ModificationDatetimeOutdatedException();
             }
@@ -160,4 +200,25 @@ public class ActivityServiceImpl implements ActivityService{
         return userProfile != null ? userProfile.getId() : null;
     }
 
+    private void sendActivityDeleteEvent(Activity activity) {
+        try {
+            ObjectWriter ow = new ObjectMapper().writer().withDefaultPrettyPrinter();
+            String json = ow.writeValueAsString(activity);
+
+            ActivityEvent activityEvent = ActivityEvent.builder()
+                    .activityId(activity.getId())
+                    .topic(kafkaTopicActivityDelete)
+                    .creationDate(LocalDateTime.now())
+                    .sentBy(appName)
+                    .journeyId(UUID.randomUUID().toString())
+                    .payload(json)
+                    .build();
+            kafkaTemplateForActivity.send(kafkaTopicActivityDelete, activityEvent);
+            log.trace("Sent activity delete event");
+        } catch (JsonProcessingException e) {
+            e.printStackTrace();
+            log.error("Failed to send kafka event {}", e.getMessage());
+        }
+
+    }
 }

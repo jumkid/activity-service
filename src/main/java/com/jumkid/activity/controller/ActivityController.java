@@ -73,8 +73,8 @@ public class ActivityController {
             " && @activityAccessAuthorizer.isOwner(#activityId)")
     public CommonResponse delete(@PathVariable long activityId) {
         log.debug("delete activity by id {}", activityId);
-        activityService.deleteActivity(activityId);
-        return CommonResponse.builder().success(true).data(String.valueOf(activityId)).build();
+        Integer count = activityService.deleteActivity(activityId);
+        return CommonResponse.builder().success(count == 1).data(String.valueOf(activityId)).build();
     }
 
 }

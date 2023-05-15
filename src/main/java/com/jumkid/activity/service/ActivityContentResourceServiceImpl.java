@@ -35,20 +35,20 @@ public class ActivityContentResourceServiceImpl implements ActivityContentResour
 
     private final ActivityContentResourceMapper contentResourceMapper;
 
-    private final KafkaTemplate<String, ContentEvent> kafkaTemplate;
+    private final KafkaTemplate<String, ContentEvent> kafkaTemplateForContent;
 
     private final HttpServletRequest httpServletRequest;
 
     public ActivityContentResourceServiceImpl(ActivityRepository activityRepository,
                                               ContentResourceRepository contentResourceRepository,
                                               ActivityContentResourceMapper contentResourceMapper,
-                                              KafkaTemplate<String, ContentEvent> kafkaTemplate,
+                                              KafkaTemplate<String, ContentEvent> kafkaTemplateForContent,
                                               HttpServletRequest httpServletRequest) {
         this.httpServletRequest = httpServletRequest;
         this.activityRepository = activityRepository;
         this.contentResourceRepository = contentResourceRepository;
         this.contentResourceMapper = contentResourceMapper;
-        this.kafkaTemplate = kafkaTemplate;
+        this.kafkaTemplateForContent = kafkaTemplateForContent;
     }
 
     @Transactional
@@ -74,14 +74,20 @@ public class ActivityContentResourceServiceImpl implements ActivityContentResour
 
         contentResourceRepository.delete(entity);
 
-        //send event to content vault to remove physical file
+        this.sendContentDeleteEvent(entity.getContentResourceId());
+    }
+
+    @Override
+    public void sendContentDeleteEvent(String contentId) {
         ContentEvent contentEvent = ContentEvent.builder()
                 .journeyId(httpServletRequest.getHeader(JOURNEY_ID))
-                .contentId(entity.getContentResourceId())
+                .contentId(contentId)
                 .topic(kafkaTopicContentDelete)
                 .sentBy(appName)
                 .creationDate(LocalDateTime.now())
+                .payload(null)
                 .build();
-        kafkaTemplate.send(kafkaTopicContentDelete, contentEvent);
+        kafkaTemplateForContent.send(kafkaTopicContentDelete, contentEvent);
+        log.trace("Sent content delete event");
     }
 }
