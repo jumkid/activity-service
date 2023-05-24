@@ -55,6 +55,11 @@ public class ActivityContentResourceServiceImpl implements ActivityContentResour
     @Override
     public ContentResource save(ContentResource contentResource) throws ActivityNotFoundException {
         Long activityId = contentResource.getActivityId();
+
+        if (activityId == null) {
+            throw new ActivityNotFoundException();
+        }
+
         ActivityEntity activityEntity = activityRepository
                 .findById(activityId)
                 .orElseThrow(() -> new ActivityNotFoundException(activityId));
