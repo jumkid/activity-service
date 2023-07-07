@@ -25,7 +25,7 @@
 
         <flyway.version>9.17.0</flyway.version>
         <mysql.connector.version>8.0.33</mysql.connector.version>
-        <h2.db.version>2.1.214</h2.db.version>
+        <h2.db.version>2.2.220</h2.db.version>
 
         <!-- jumkid modules -->
         <sharejar.version>1.0.1</sharejar.version>
