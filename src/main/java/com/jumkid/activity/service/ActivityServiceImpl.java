@@ -167,8 +167,8 @@ public class ActivityServiceImpl implements ActivityService{
 
             if (dto.getModificationDate() == null) { throw new ModificationDatetimeNotFoundException(); }
 
-            if (oldActivityEntity.getModificationDate() == null
-                    || !oldActivityEntity.getModificationDate().truncatedTo(ChronoUnit.MILLIS)
+            if (oldActivityEntity.getModificationDate() != null
+                    && !oldActivityEntity.getModificationDate().truncatedTo(ChronoUnit.MILLIS)
                     .equals(dto.getModificationDate().truncatedTo(ChronoUnit.MILLIS))) {
                 throw new ModificationDatetimeOutdatedException();
             }
