@@ -19,7 +19,6 @@ import com.jumkid.share.exception.ModificationDatetimeOutdatedException;
 import com.jumkid.share.user.UserProfile;
 import com.jumkid.share.user.UserProfileManager;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
@@ -52,7 +51,6 @@ public class ActivityServiceImpl implements ActivityService{
     private final ActivityMapper activityMapper;
     private final MapperContext mapperContext;
 
-    @Autowired
     public ActivityServiceImpl(KafkaTemplate<String, ActivityEvent> kafkaTemplateForActivity,
                                ActivityRepository activityRepository,
                                ActivityContentResourceService activityContentResourceService,
