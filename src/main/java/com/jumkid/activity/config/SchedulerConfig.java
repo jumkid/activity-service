@@ -49,7 +49,9 @@ public class SchedulerConfig {
 
     @Autowired
     public SchedulerConfig(ActivityNotificationRepository activityNotificationRepository,
-                           KafkaTemplate<String, ActivityEvent> kafkaTemplateForActivity, UserProfileManager userProfileManager, ActivityMapper activityMapper, MapperContext mapperContext) {
+                           KafkaTemplate<String, ActivityEvent> kafkaTemplateForActivity,
+                           UserProfileManager userProfileManager, ActivityMapper activityMapper,
+                           MapperContext mapperContext) {
         this.activityNotificationRepository = activityNotificationRepository;
         this.kafkaTemplateForActivity = kafkaTemplateForActivity;
         this.userProfileManager = userProfileManager;

@@ -1,6 +1,7 @@
 package com.jumkid.activity.controller;
 
 import com.jumkid.activity.controller.dto.Activity;
+import com.jumkid.activity.exception.ActivityNotFoundException;
 import com.jumkid.activity.service.ActivityService;
 import com.jumkid.share.controller.response.CommonResponse;
 import jakarta.validation.Valid;
@@ -45,7 +46,7 @@ public class ActivityController {
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')" +
             " && (@activityAccessAuthorizer.isOwner(#activityId) || @activityAccessAuthorizer.isAssignee(#activityId))")
-    public Activity get(@PathVariable long activityId) {
+    public Activity get(@PathVariable long activityId) throws ActivityNotFoundException {
         return activityService.getActivity(activityId);
     }
 
@@ -62,7 +63,7 @@ public class ActivityController {
     @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')" +
             " && @activityAccessAuthorizer.isOwner(#activityId)")
     public Activity update(@PathVariable long activityId,
-                           @NotNull @RequestBody Activity partialActivity) {
+                           @NotNull @RequestBody Activity partialActivity) throws ActivityNotFoundException {
         log.debug("update existing activity with id {}", activityId);
         return activityService.updateActivity(activityId, partialActivity);
     }
@@ -71,7 +72,7 @@ public class ActivityController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')" +
             " && @activityAccessAuthorizer.isOwner(#activityId)")
-    public CommonResponse delete(@PathVariable long activityId) {
+    public CommonResponse delete(@PathVariable long activityId) throws ActivityNotFoundException {
         log.debug("delete activity by id {}", activityId);
         Integer count = activityService.deleteActivity(activityId);
         return CommonResponse.builder().success(count == 1).data(String.valueOf(activityId)).build();

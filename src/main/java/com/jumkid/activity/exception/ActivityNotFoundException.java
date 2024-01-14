@@ -1,6 +1,6 @@
 package com.jumkid.activity.exception;
 
-public class ActivityNotFoundException extends RuntimeException{
+public class ActivityNotFoundException extends Exception{
 
     private static final String ERROR = "Can not find activity with Id: ";
 

@@ -27,7 +27,7 @@ public class ActivityAccessAuthorizer {
         this.contentResourceRepository = contentResourceRepository;
     }
 
-    public boolean isOwner(long activityId) {
+    public boolean isOwner(long activityId) throws ActivityNotFoundException {
         Optional<ActivityEntity> optional = activityRepository.findById(activityId);
         if (optional.isPresent()) {
             return optional.filter(activityEntity -> isCurrentUser(activityEntity.getCreatedBy())).isPresent();
@@ -40,15 +40,17 @@ public class ActivityAccessAuthorizer {
         return isCurrentUser(activityEntity.getCreatedBy());
     }
 
-    public boolean hasPermissionForContentResource(long contentResourceId) {
+    public boolean hasPermissionForContentResource(long contentResourceId) throws ActivityNotFoundException, ContentResourceNotFoundException {
         Optional<ContentResourceEntity> optional = contentResourceRepository.findById(contentResourceId);
         if (optional.isPresent()) {
             Long activityId = optional.get().getActivityEntity().getId();
             return isOwner(activityId) || isAssignee(activityId);
-        } throw new ContentResourceNotFoundException(contentResourceId);
+        }
+
+        throw new ContentResourceNotFoundException(contentResourceId);
     }
 
-    public boolean isAssignee(long activityId) {
+    public boolean isAssignee(long activityId) throws ActivityNotFoundException {
         Optional<ActivityEntity> optional = activityRepository.findById(activityId);
         if (optional.isPresent()) {
             return isAssignee(optional.get());

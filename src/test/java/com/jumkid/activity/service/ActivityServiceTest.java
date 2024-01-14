@@ -2,6 +2,7 @@ package com.jumkid.activity.service;
 
 import com.jumkid.activity.TestSetup;
 import com.jumkid.activity.controller.dto.Activity;
+import com.jumkid.activity.exception.ActivityNotFoundException;
 import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.repository.ActivityRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
@@ -53,7 +54,7 @@ class ActivityServiceTest {
     }
 
     @Test
-    void givenActivityId_shouldGetActivity() {
+    void givenActivityId_shouldGetActivity() throws ActivityNotFoundException {
         //given
         long activityId = 0L;
         //when

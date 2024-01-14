@@ -1,6 +1,8 @@
 package com.jumkid.activity.controller;
 
 import com.jumkid.activity.controller.dto.ContentResource;
+import com.jumkid.activity.exception.ActivityNotFoundException;
+import com.jumkid.activity.exception.ContentResourceNotFoundException;
 import com.jumkid.activity.service.ActivityContentResourceService;
 import com.jumkid.share.controller.response.CommonResponse;
 import jakarta.validation.Valid;
@@ -26,7 +28,7 @@ public class ActivityContentResourceController {
     @PostMapping
     @ResponseStatus(HttpStatus.OK)
     @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')")
-    public ContentResource add(@Valid @NotNull @RequestBody ContentResource contentResource) {
+    public ContentResource add(@Valid @NotNull @RequestBody ContentResource contentResource) throws ActivityNotFoundException {
         return contentResourceService.save(contentResource);
     }
 
@@ -34,7 +36,7 @@ public class ActivityContentResourceController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PreAuthorize("hasAnyAuthority('USER_ROLE', 'ADMIN_ROLE')" +
             " && @activityAccessAuthorizer.hasPermissionForContentResource(#contentResourceId)")
-    public CommonResponse delete(@PathVariable long contentResourceId) {
+    public CommonResponse delete(@PathVariable long contentResourceId) throws ContentResourceNotFoundException {
         contentResourceService.delete(contentResourceId);
         return CommonResponse.builder().success(true).data(String.valueOf(contentResourceId)).build();
     }

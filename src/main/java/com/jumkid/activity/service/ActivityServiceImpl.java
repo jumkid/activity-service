@@ -119,7 +119,7 @@ public class ActivityServiceImpl implements ActivityService{
 
     @Override
     @Transactional
-    public Integer deleteActivity(long activityId) {
+    public Integer deleteActivity(long activityId) throws ActivityNotFoundException {
         ActivityEntity oldActivityEntity = activityRepository.findById(activityId)
                 .orElseThrow(() -> new ActivityNotFoundException(activityId));
 

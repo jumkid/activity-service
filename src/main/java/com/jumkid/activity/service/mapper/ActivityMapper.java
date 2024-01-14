@@ -3,6 +3,7 @@ package com.jumkid.activity.service.mapper;
 import com.jumkid.activity.controller.dto.Activity;
 import com.jumkid.activity.model.ActivityEntity;
 import org.mapstruct.*;
+import org.springframework.context.annotation.Bean;
 
 import java.util.List;
 
