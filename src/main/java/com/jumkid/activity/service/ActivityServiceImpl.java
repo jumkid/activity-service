@@ -37,7 +37,7 @@ public class ActivityServiceImpl implements ActivityService{
     @Value("${spring.application.name}")
     private String appName;
 
-    @Value("${spring.kafka.topic.name.activity.delete}")
+    @Value("${com.jumkid.events.activity.activity-delete}")
     private String kafkaTopicActivityDelete;
 
     private final KafkaTemplate<String, ActivityEvent> kafkaTemplateForActivity;

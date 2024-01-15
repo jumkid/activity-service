@@ -27,7 +27,7 @@ public class ActivityContentResourceServiceImpl implements ActivityContentResour
     @Value("${spring.application.name}")
     private String appName;
 
-    @Value("${spring.kafka.topic.name.content.delete}")
+    @Value("${com.jumkid.events.content.content-delete}")
     private String kafkaTopicContentDelete;
 
     private final ActivityRepository activityRepository;

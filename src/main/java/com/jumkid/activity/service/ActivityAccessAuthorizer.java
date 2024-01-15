@@ -21,7 +21,9 @@ public class ActivityAccessAuthorizer {
     private final ActivityRepository activityRepository;
     private final ContentResourceRepository contentResourceRepository;
 
-    public ActivityAccessAuthorizer(UserProfileManager userProfileManager, ActivityRepository activityRepository, ContentResourceRepository contentResourceRepository) {
+    public ActivityAccessAuthorizer(UserProfileManager userProfileManager,
+                                    ActivityRepository activityRepository,
+                                    ContentResourceRepository contentResourceRepository) {
         this.userProfileManager = userProfileManager;
         this.activityRepository = activityRepository;
         this.contentResourceRepository = contentResourceRepository;
@@ -40,7 +42,8 @@ public class ActivityAccessAuthorizer {
         return isCurrentUser(activityEntity.getCreatedBy());
     }
 
-    public boolean hasPermissionForContentResource(long contentResourceId) throws ActivityNotFoundException, ContentResourceNotFoundException {
+    public boolean hasPermissionForContentResource(long contentResourceId)
+            throws ActivityNotFoundException, ContentResourceNotFoundException {
         Optional<ContentResourceEntity> optional = contentResourceRepository.findById(contentResourceId);
         if (optional.isPresent()) {
             Long activityId = optional.get().getActivityEntity().getId();

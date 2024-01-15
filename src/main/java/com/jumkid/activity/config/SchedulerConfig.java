@@ -35,7 +35,7 @@ public class SchedulerConfig {
     @Value("${spring.application.name}")
     private String appName;
 
-    @Value("${spring.kafka.topic.name.activity.notify}")
+    @Value("${com.jumkid.events.activity.activity-notify}")
     private String kafkaTopicActivityNotify;
 
     private final ActivityNotificationRepository activityNotificationRepository;

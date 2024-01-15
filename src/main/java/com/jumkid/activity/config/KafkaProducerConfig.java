@@ -27,13 +27,13 @@ public class KafkaProducerConfig {
     @Value("${spring.kafka.bootstrap-servers}")
     private String bootstrapAddress;
 
-    @Value("${spring.kafka.topic.name.activity.notify}")
+    @Value("${com.jumkid.events.activity.activity-notify}")
     private String kafkaTopicActivityNotify;
 
-    @Value("${spring.kafka.topic.name.activity.delete}")
+    @Value("${com.jumkid.events.activity.activity-delete}")
     private String kafkaTopicActivityDelete;
 
-    @Value("${spring.kafka.topic.name.content.delete}")
+    @Value("${com.jumkid.events.content.content-delete}")
     private String kafkaTopicContentDelete;
 
     @Bean

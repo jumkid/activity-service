@@ -17,13 +17,20 @@ import java.util.Calendar;
 
 import static org.springframework.http.HttpStatus.*;
 
-@RestControllerAdvice
 @Slf4j
+@RestControllerAdvice
 public class ExceptionHandlingAdvice {
 
-    @ExceptionHandler({ActivityNotFoundException.class, ContentResourceNotFoundException.class})
+    @ExceptionHandler({ActivityNotFoundException.class})
     @ResponseStatus(NOT_FOUND)
-    public CustomErrorResponse handle(Exception ex) {
+    public CustomErrorResponse handleNotFoundException(ActivityNotFoundException ex) {
+        log.info("Data could not be found.", ex);
+        return new CustomErrorResponse(Calendar.getInstance().getTime(), ex.getMessage());
+    }
+
+    @ExceptionHandler({ContentResourceNotFoundException.class})
+    @ResponseStatus(NOT_FOUND)
+    public CustomErrorResponse handleNotFoundException(ContentResourceNotFoundException ex) {
         log.info("Data could not be found.", ex);
         return new CustomErrorResponse(Calendar.getInstance().getTime(), ex.getMessage());
     }
