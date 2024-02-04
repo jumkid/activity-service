@@ -1,6 +1,6 @@
 package com.jumkid.activity.service;
 
-import com.jumkid.activity.TestSetup;
+import com.jumkid.activity.TestObjectsBuilder;
 import com.jumkid.activity.controller.dto.Activity;
 import com.jumkid.activity.exception.ActivityNotFoundException;
 import com.jumkid.activity.model.ActivityEntity;
@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -31,7 +32,10 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:10092", "port=10092" })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ActivityServiceTest {
+class ActivityServiceTest implements TestObjectsBuilder {
+
+    @Value("${com.jumkid.jwt.test-user-id}")
+    private String testUserId;
 
     @Autowired
     ActivityMapper activityMapper;
@@ -47,7 +51,7 @@ class ActivityServiceTest {
         activityService = new ActivityServiceImpl(kafkaTemplateForActivity, activityRepository,
                 activityContentResourceService, userProfileManager, activityMapper, mapperContext);
 
-        Activity activity = TestSetup.buildActivity();
+        Activity activity = buildActivity(testUserId);
         ActivityEntity activityEntity = activityMapper.dtoToEntity(activity, mapperContext);
 
         when(activityRepository.findById(activity.getId())).thenReturn(Optional.of(activityEntity));

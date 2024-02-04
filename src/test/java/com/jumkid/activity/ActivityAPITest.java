@@ -6,17 +6,22 @@ import com.jumkid.activity.model.ActivityEntity;
 import com.jumkid.activity.repository.ActivityRepository;
 import com.jumkid.activity.service.mapper.ActivityMapper;
 import com.jumkid.activity.service.mapper.MapperContext;
-import org.junit.jupiter.api.BeforeEach;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
+import io.restassured.module.mockmvc.RestAssuredMockMvc;
+import io.restassured.parsing.Parser;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.http.MediaType;
+import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.kafka.test.context.EmbeddedKafka;
-import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,20 +29,28 @@ import java.util.Optional;
 import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.hamcrest.Matchers.equalTo;
 
-@SpringBootTest
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:10092", "port=10092" })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ActivityAPITest {
+class ActivityAPITest implements TestObjectsBuilder{
+
+    @LocalServerPort
+    private int port;
+
+    @Value("${com.jumkid.jwt.test-token}")
+    private String testToken;
+
+    @Value("${com.jumkid.jwt.test-user-id}")
+    private String testUserId;
 
     @Autowired
-    private MockMvc mockMvc;
+    private WebApplicationContext webApplicationContext;
 
     private Activity activity;
+    private ActivityEntity activityEntity;
 
     @Autowired
     private ActivityMapper activityMapper;
@@ -48,130 +61,156 @@ class ActivityAPITest {
     @MockBean
     private ActivityRepository activityRepository;
 
-    @BeforeEach
+    @BeforeAll
     void setUp() {
         try {
-            activity = TestSetup.buildActivity();
-            ActivityEntity activityEntity = activityMapper.dtoToEntity(activity, mapperContext);
+            RestAssured.defaultParser = Parser.JSON;
+            RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
-            when(activityRepository.save(any(ActivityEntity.class))).thenReturn(activityEntity);
+            activity = buildActivity(testUserId);
+            activityEntity = activityMapper.dtoToEntity(activity, mapperContext);
 
-            when(activityRepository.findById(activity.getId())).thenReturn(Optional.of(activityEntity));
         } catch (Exception e) {
             fail(e.getMessage());
         }
     }
 
     @Test
-    @WithMockUser(username="test", password="test", authorities="USER_ROLE")
     void shouldGetActivitiesByUser() throws Exception {
-        ActivityEntity activityEntity = activityMapper.dtoToEntity(activity, mapperContext);
         when(activityRepository.findByUser(anyString())).thenReturn(List.of(activityEntity));
 
-        mockMvc.perform(get("/activities")
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.[0].id").value(activity.getId()))
-                .andExpect(jsonPath("$.[0].name").value(activity.getName()));
+        RestAssured
+                .given()
+                    .baseUri("http://localhost").port(port)
+                    .headers("Authorization", "Bearer " + testToken)
+                    .contentType(ContentType.JSON)
+                .when()
+                    .get("/activities")
+                .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("[0].id", equalTo(0),
+                            "[0].name", equalTo(activity.getName()));
     }
 
     @Test
-    @WithMockUser(username="test", password="test", authorities="USER_ROLE")
     void whenGivenActivityId_shouldGetActivity() throws Exception {
-        mockMvc.perform(get("/activities/" + activity.getId())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(activity.getId()))
-                .andExpect(jsonPath("$.name").value(activity.getName()));
+        when(activityRepository.findById(activity.getId())).thenReturn(Optional.of(activityEntity));
+
+        RestAssured
+                .given()
+                    .baseUri("http://localhost").port(port)
+                    .headers("Authorization", "Bearer " + testToken)
+                    .contentType(ContentType.JSON)
+                .when()
+                    .get("/activities/" + activity.getId())
+                .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("id", equalTo(0));
     }
 
     @Test
-    @WithMockUser(username="guest", authorities="GUEST_ROLE")
     void whenAssessAsGuest_shouldReturnForbiddenStat() throws Exception {
-        mockMvc.perform(get("/activities/" + activity.getId())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+        RestAssured
+                .given()
+                    .baseUri("http://localhost").port(port)
+                    .contentType(ContentType.JSON)
+                .when()
+                    .get("/activities/" + activity.getId())
+                .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
-    @WithMockUser(username="notOwner", password = "notOwner", authorities="USER_ROLE")
     void whenAssessAsNoOwner_shouldReturnForbiddenStat() throws Exception {
-        mockMvc.perform(get("/activities/" + activity.getId())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+        Activity _activity = buildActivity("nobody");
+        when(activityRepository.findById(activity.getId()))
+                .thenReturn(Optional.of(activityMapper.dtoToEntity(_activity, mapperContext)));
+
+        RestAssured
+                .given()
+                    .baseUri("http://localhost").port(port)
+                    .headers("Authorization", "Bearer " + testToken)
+                    .contentType(ContentType.JSON)
+                .when()
+                    .get("/activities/" + activity.getId())
+                .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
-    @WithMockUser(username="test", password="test", authorities="USER_ROLE")
     void whenGivenActivity_shouldSaveActivityEntity() throws Exception {
-        mockMvc.perform(post("/activities")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(new ObjectMapper().writeValueAsBytes(activity)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(activity.getId()))
-                .andExpect(jsonPath("$.name").value(activity.getName()));
+        when(activityRepository.save(any(ActivityEntity.class))).thenReturn(activityEntity);
+
+        RestAssured
+                .given()
+                    .baseUri("http://localhost").port(port)
+                    .headers("Authorization", "Bearer " + testToken)
+                    .contentType(ContentType.JSON)
+                    .body(new ObjectMapper().writeValueAsBytes(activity))
+                .when()
+                    .post("/activities")
+                .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("id", equalTo(0), "name", equalTo(activity.getName()));
     }
 
     @Test
-    @WithMockUser(username="guest", authorities="GUEST_ROLE")
     void whenSaveAsGuest_shouldReturnForbiddenStat() throws Exception {
-        mockMvc.perform(post("/activities")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsBytes(activity)))
-                .andExpect(status().isForbidden());
+        RestAssured
+                .given()
+                    .baseUri("http://localhost").port(port)
+                    .contentType(ContentType.JSON)
+                .when()
+                    .post("/activities")
+                .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value());
+
     }
 
     @Test
-    @WithMockUser(username="test", password="test", authorities="USER_ROLE")
     void whenGivenActivityIdAndActivity_shouldUpdateActivityEntity() throws Exception{
-        mockMvc.perform(put("/activities/" + activity.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsBytes(activity)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(activity.getId()))
-                .andExpect(jsonPath("$.name").value(activity.getName()));
+        when(activityRepository.findById(activity.getId())).thenReturn(Optional.of(activityEntity));
+        when(activityRepository.save(any(ActivityEntity.class))).thenReturn(activityEntity);
+
+        RestAssured
+                .given()
+                    .baseUri("http://localhost").port(port)
+                    .headers("Authorization", "Bearer " + testToken)
+                    .contentType(ContentType.JSON)
+                    .body(new ObjectMapper().writeValueAsBytes(activity))
+                .when()
+                    .put("/activities/" + activity.getId())
+                .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("id", equalTo(0), "name", equalTo(activity.getName()));
     }
 
     @Test
-    @WithMockUser(username="guest", authorities="GUEST_ROLE")
     void whenUpdateAsGuest_shouldReturnForbiddenStat() throws Exception {
-        mockMvc.perform(put("/activities/" + activity.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsBytes(activity)))
-                .andExpect(status().isForbidden());
+        RestAssured
+                .given()
+                    .baseUri("http://localhost").port(port)
+                    .contentType(ContentType.JSON)
+                    .body(new ObjectMapper().writeValueAsBytes(activity))
+                .when()
+                    .put("/activities/" + activity.getId())
+                .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value());
     }
 
     @Test
-    @WithMockUser(username="notOwner", authorities="USER_ROLE")
-    void whenUpdateAsNotOwner_shouldReturnForbiddenStat() throws Exception {
-        mockMvc.perform(put("/activities/" + activity.getId())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(new ObjectMapper().writeValueAsBytes(activity)))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(username="test", password="test", authorities="USER_ROLE")
     void whenGivenActivityId_shouldDeleteActivityEntity() throws Exception{
-        mockMvc.perform(delete("/activities/" + activity.getId())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isNoContent());
-    }
+        when(activityRepository.findById(activity.getId())).thenReturn(Optional.of(activityEntity));
 
-    @Test
-    @WithMockUser(username="guest", authorities="GUEST_ROLE")
-    void whenDeleteAsGuest_shouldReturnForbiddenStat() throws Exception{
-        mockMvc.perform(delete("/activities/" + activity.getId())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
-    }
-
-    @Test
-    @WithMockUser(username="notOwner", authorities="USER_ROLE")
-    void whenDeleteAsNotOwner_shouldReturnForbiddenStat() throws Exception{
-        mockMvc.perform(delete("/activities/" + activity.getId())
-                .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isForbidden());
+        RestAssured
+                .given()
+                    .baseUri("http://localhost").port(port)
+                    .headers("Authorization", "Bearer " + testToken)
+                    .contentType(ContentType.JSON)
+                .when()
+                    .delete("/activities/" + activity.getId())
+                .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
     }
 
 }

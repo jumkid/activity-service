@@ -10,11 +10,11 @@ import com.jumkid.activity.enums.NotifyTimeUnit;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class TestSetup {
+public interface TestObjectsBuilder {
 
-    static long DUMMY_ID = 0L;
+    long DUMMY_ID = 0L;
 
-    public static Activity buildActivity() {
+    default Activity buildActivity(String userId) {
         LocalDateTime now = LocalDateTime.now();
         return Activity.builder()
                 .id(DUMMY_ID)
@@ -38,7 +38,7 @@ public class TestSetup {
                 .status(ActivityStatus.DRAFT)
                 .startDate(now.plusDays(1))
                 .endDate(now.plusDays(2))
-                .createdBy("test")
+                .createdBy(userId)
                 .creationDate(now)
                 .modificationDate(now)
                 .build();

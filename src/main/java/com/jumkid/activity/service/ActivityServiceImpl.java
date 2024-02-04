@@ -78,8 +78,9 @@ public class ActivityServiceImpl implements ActivityService{
 
     @Override
     public List<Activity> getUserActivities() {
-        log.debug("fetch all activities for current user");
-        return activityMapper.entitiesToDTOS(activityRepository.findByUser(getCurrentUserId()));
+        log.info("fetch all activities for current user");
+        List<ActivityEntity> activityEntityList = activityRepository.findByUser(getCurrentUserId());
+        return activityMapper.entitiesToDTOS(activityEntityList);
     }
 
     @Override
