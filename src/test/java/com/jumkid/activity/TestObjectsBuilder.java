@@ -10,11 +10,11 @@ import com.jumkid.activity.enums.NotifyTimeUnit;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface TestObjectsBuilder {
+public class TestObjectsBuilder {
 
-    long DUMMY_ID = 0L;
+    static long DUMMY_ID = 0L;
 
-    default Activity buildActivity(String userId) {
+    public static Activity buildActivity(String userId) {
         LocalDateTime now = LocalDateTime.now();
         return Activity.builder()
                 .id(DUMMY_ID)

@@ -11,14 +11,16 @@ import com.jumkid.share.event.ActivityEvent;
 import com.jumkid.share.user.UserProfileManager;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 
@@ -28,42 +30,45 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @Slf4j
-@SpringBootTest
-@ExtendWith(MockitoExtension.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureMockMvc
+@PropertySource("classpath:application.share.properties")
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:10092", "port=10092" })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ActivityServiceTest implements TestObjectsBuilder {
+class ActivityServiceTest{
 
-    @Value("${com.jumkid.jwt.test-user-id}")
+    @Value("${com.jumkid.jwt.test.user-id}")
     private String testUserId;
 
     @Autowired
     ActivityMapper activityMapper;
-
+    @Mock
+    ActivityContentResourceService activityContentResourceService;
+    @Mock
+    ActivityRepository activityRepository;
+    @Mock
+    MapperContext mapperContext;
+    @Mock
+    UserProfileManager userProfileManager;
     private ActivityService activityService;
 
     @BeforeAll
-    void setUp(@Mock KafkaTemplate<String, ActivityEvent> kafkaTemplateForActivity,
-               @Mock ActivityRepository activityRepository,
-               @Mock ActivityContentResourceService activityContentResourceService,
-               @Mock UserProfileManager userProfileManager,
-               @Mock MapperContext mapperContext) {
+    void setUp(@Autowired KafkaTemplate<String, ActivityEvent> kafkaTemplateForActivity) {
         activityService = new ActivityServiceImpl(kafkaTemplateForActivity, activityRepository,
                 activityContentResourceService, userProfileManager, activityMapper, mapperContext);
-
-        Activity activity = buildActivity(testUserId);
-        ActivityEntity activityEntity = activityMapper.dtoToEntity(activity, mapperContext);
-
-        when(activityRepository.findById(activity.getId())).thenReturn(Optional.of(activityEntity));
     }
 
     @Test
     void givenActivityId_shouldGetActivity() throws ActivityNotFoundException {
         //given
         long activityId = 0L;
+        Activity activity = TestObjectsBuilder.buildActivity(testUserId);
+        ActivityEntity activityEntity = activityMapper.dtoToEntity(activity, mapperContext);
         //when
-        Activity activity = activityService.getActivity(activityId);
-        assertTrue(true);
+        when(activityRepository.findById(activity.getId())).thenReturn(Optional.of(activityEntity));
+        Activity _activity = activityService.getActivity(activityId);
+        //then
+        assertEquals(activityId, _activity.getId());
     }
 
 }

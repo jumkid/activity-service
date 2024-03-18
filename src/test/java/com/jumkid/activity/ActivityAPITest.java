@@ -19,6 +19,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpStatus;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.web.context.WebApplicationContext;
@@ -33,17 +34,18 @@ import static org.hamcrest.Matchers.equalTo;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@PropertySource("classpath:application.share.properties")
 @EmbeddedKafka(partitions = 1, brokerProperties = { "listeners=PLAINTEXT://localhost:10092", "port=10092" })
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class ActivityAPITest implements TestObjectsBuilder{
+class ActivityAPITest{
 
     @LocalServerPort
     private int port;
 
-    @Value("${com.jumkid.jwt.test-token}")
-    private String testToken;
+    @Value("${com.jumkid.jwt.test.user-token}")
+    private String testUserToken;
 
-    @Value("${com.jumkid.jwt.test-user-id}")
+    @Value("${com.jumkid.jwt.test.user-id}")
     private String testUserId;
 
     @Autowired
@@ -67,7 +69,7 @@ class ActivityAPITest implements TestObjectsBuilder{
             RestAssured.defaultParser = Parser.JSON;
             RestAssuredMockMvc.webAppContextSetup(webApplicationContext);
 
-            activity = buildActivity(testUserId);
+            activity = TestObjectsBuilder.buildActivity(testUserId);
             activityEntity = activityMapper.dtoToEntity(activity, mapperContext);
 
         } catch (Exception e) {
@@ -82,7 +84,7 @@ class ActivityAPITest implements TestObjectsBuilder{
         RestAssured
                 .given()
                     .baseUri("http://localhost").port(port)
-                    .headers("Authorization", "Bearer " + testToken)
+                    .headers("Authorization", "Bearer " + testUserToken)
                     .contentType(ContentType.JSON)
                 .when()
                     .get("/activities")
@@ -99,7 +101,7 @@ class ActivityAPITest implements TestObjectsBuilder{
         RestAssured
                 .given()
                     .baseUri("http://localhost").port(port)
-                    .headers("Authorization", "Bearer " + testToken)
+                    .headers("Authorization", "Bearer " + testUserToken)
                     .contentType(ContentType.JSON)
                 .when()
                     .get("/activities/" + activity.getId())
@@ -122,14 +124,14 @@ class ActivityAPITest implements TestObjectsBuilder{
 
     @Test
     void whenAssessAsNoOwner_shouldReturnForbiddenStat() throws Exception {
-        Activity _activity = buildActivity("nobody");
+        Activity _activity = TestObjectsBuilder.buildActivity("nobody");
         when(activityRepository.findById(activity.getId()))
                 .thenReturn(Optional.of(activityMapper.dtoToEntity(_activity, mapperContext)));
 
         RestAssured
                 .given()
                     .baseUri("http://localhost").port(port)
-                    .headers("Authorization", "Bearer " + testToken)
+                    .headers("Authorization", "Bearer " + testUserToken)
                     .contentType(ContentType.JSON)
                 .when()
                     .get("/activities/" + activity.getId())
@@ -144,7 +146,7 @@ class ActivityAPITest implements TestObjectsBuilder{
         RestAssured
                 .given()
                     .baseUri("http://localhost").port(port)
-                    .headers("Authorization", "Bearer " + testToken)
+                    .headers("Authorization", "Bearer " + testUserToken)
                     .contentType(ContentType.JSON)
                     .body(new ObjectMapper().writeValueAsBytes(activity))
                 .when()
@@ -175,7 +177,7 @@ class ActivityAPITest implements TestObjectsBuilder{
         RestAssured
                 .given()
                     .baseUri("http://localhost").port(port)
-                    .headers("Authorization", "Bearer " + testToken)
+                    .headers("Authorization", "Bearer " + testUserToken)
                     .contentType(ContentType.JSON)
                     .body(new ObjectMapper().writeValueAsBytes(activity))
                 .when()
@@ -205,7 +207,7 @@ class ActivityAPITest implements TestObjectsBuilder{
         RestAssured
                 .given()
                     .baseUri("http://localhost").port(port)
-                    .headers("Authorization", "Bearer " + testToken)
+                    .headers("Authorization", "Bearer " + testUserToken)
                     .contentType(ContentType.JSON)
                 .when()
                     .delete("/activities/" + activity.getId())
