@@ -1,4 +1,4 @@
-CREATE TABLE activity (
+CREATE TABLE IF NOT EXISTS activity (
     activity_id INTEGER AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description VARCHAR(5000),
@@ -14,7 +14,7 @@ CREATE TABLE activity (
     modification_date DATETIME(3)
 );
 
-CREATE TABLE activity_assignee (
+CREATE TABLE IF NOT EXISTS activity_assignee (
     activity_assignee_id INTEGER AUTO_INCREMENT PRIMARY KEY,
     activity_id INTEGER,
     assignee_id VARCHAR(255) NOT NULL,
@@ -24,7 +24,7 @@ CREATE TABLE activity_assignee (
 );
 CREATE UNIQUE INDEX unique_key_activity_assignee_id ON activity_assignee(activity_id, assignee_id);
 
-CREATE TABLE activity_notification (
+CREATE TABLE IF NOT EXISTS activity_notification (
     activity_notification_id INTEGER AUTO_INCREMENT PRIMARY KEY,
     activity_id INTEGER,
     notify_before INTEGER,
@@ -36,7 +36,7 @@ CREATE TABLE activity_notification (
         ON DELETE CASCADE
 );
 
-CREATE TABLE activity_content_resource (
+CREATE TABLE IF NOT EXISTS activity_content_resource (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     activity_id INTEGER,
     content_resource_id VARCHAR(255) NOT NULL,
@@ -46,7 +46,7 @@ CREATE TABLE activity_content_resource (
 );
 CREATE UNIQUE INDEX unique_key_activity_assignee_id ON activity_content_resource(activity_id, content_resource_id);
 
-CREATE TABLE activity_entity_link (
+CREATE TABLE IF NOT EXISTS activity_entity_link (
     id INTEGER AUTO_INCREMENT PRIMARY KEY,
     activity_id INTEGER,
     entity_name VARCHAR(10) NOT NULL,
@@ -57,7 +57,7 @@ CREATE TABLE activity_entity_link (
 );
 CREATE UNIQUE INDEX unique_key_activity_entity_link ON activity_entity_link(activity_id, entity_name, entity_id);
 
-CREATE TABLE priority (
+CREATE TABLE IF NOT EXISTS priority (
     priority_id INTEGER AUTO_INCREMENT PRIMARY KEY,
     identifier VARCHAR(255) NOT NULL,
     label VARCHAR(255) NOT NULL

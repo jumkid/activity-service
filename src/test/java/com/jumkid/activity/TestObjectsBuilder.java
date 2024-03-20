@@ -12,12 +12,16 @@ import java.util.List;
 
 public class TestObjectsBuilder {
 
-    static long DUMMY_ID = 0L;
+    static long DUMMY_ID = 1L;
 
-    public static Activity buildActivity(String userId) {
+    public static Activity buildActivity() {
+        return buildActivity(DUMMY_ID, "guest");
+    }
+
+    public static Activity buildActivity(Long id, String userId) {
         LocalDateTime now = LocalDateTime.now();
         return Activity.builder()
-                .id(DUMMY_ID)
+                .id(id)
                 .name("test activity")
                 .description("This is a test activity")
                 .priority(Priority.builder()
